@@ -1,7 +1,8 @@
-package com.project.likelion13th.domain.review.dto.response;
+package com.project.likelion13th.domain.comment.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ public class CommentResDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
     public static class CommentListDTO {
         @Schema(description = "커서 ID (다음 페이지 조회를 위한 커서)", example = "50")
         private Long nextCursor;
@@ -26,6 +28,7 @@ public class CommentResDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
     public static class CommentDetailDTO {
         @Schema(description = "댓글 ID", example = "789")
         private Long commentId;
@@ -38,5 +41,8 @@ public class CommentResDTO {
 
         @Schema(description = "작성일", example = "2025-03-02")
         private String createdAt;
+
+        @Schema(description = "좋아요 수", example = "12")
+        private Integer likeCount;
     }
 }

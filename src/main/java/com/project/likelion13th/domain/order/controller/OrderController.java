@@ -2,6 +2,8 @@ package com.project.likelion13th.domain.order.controller;
 
 import com.project.likelion13th.domain.order.dto.request.OrderReqDTO;
 import com.project.likelion13th.domain.order.dto.response.OrderResDTO;
+import com.project.likelion13th.domain.order.service.command.OrderCommandService;
+import com.project.likelion13th.domain.order.service.query.OrderQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -18,13 +20,19 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Order API", description = "주문 관련 API")
 public class OrderController {
 
+    private final OrderCommandService orderCommandService;
+    private final OrderQueryService orderQueryService;
+
     @PostMapping
     @Operation(summary = "주문 추가 (상품 구매)", description = "상품을 주문합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "주문 추가 성공", content = @Content(schema = @Schema(implementation = OrderResDTO.OrderDetailDTO.class)))
     })
     public ResponseEntity<OrderResDTO.OrderDetailDTO> createOrder(@RequestBody OrderReqDTO.CreateOrderDTO request) {
-        return ResponseEntity.ok(null);
+
+        OrderResDTO.OrderDetailDTO response = orderCommandService.createOrder(request);
+
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{orderId}")
@@ -45,6 +53,7 @@ public class OrderController {
             @RequestParam Long cursor,
             @RequestParam Integer size
     ) {
-        return ResponseEntity.ok(null);
+        OrderResDTO.OrderListDTO response = orderQueryService.getMyOrder(cursor, size);
+        return ResponseEntity.ok(response);
     }
 }

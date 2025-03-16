@@ -1,8 +1,8 @@
-package com.project.likelion13th.domain.review.entity;
+package com.project.likelion13th.domain.comment.entity;
 
 import com.project.likelion13th.domain.common.entity.BaseEntity;
 import com.project.likelion13th.domain.member.entity.Member;
-import com.project.likelion13th.domain.product.entity.Product;
+import com.project.likelion13th.domain.review.entity.Review;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "review")
-public class Review extends BaseEntity {
+public class Comment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,15 +24,9 @@ public class Review extends BaseEntity {
     @Column(name = "content")
     private String content;
 
-    @Column(name = "rating")
-    private Double rating;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private Product product;
+    private Review review;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @OneToOne
     private Member member;
-
 }

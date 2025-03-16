@@ -2,6 +2,7 @@ package com.project.likelion13th.domain.review.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ public class ReviewResDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
     public static class ReviewListDTO {
         @Schema(description = "커서 ID (다음 페이지 조회를 위한 커서)", example = "100")
         private Long nextCursor;
@@ -26,6 +28,7 @@ public class ReviewResDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
     public static class ReviewDetailDTO {
         @Schema(description = "리뷰 ID", example = "123")
         private Long reviewId;

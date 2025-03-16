@@ -1,0 +1,55 @@
+package com.project.likelion13th.domain.comment.converter;
+
+import com.project.likelion13th.domain.comment.dto.request.CommentReqDTO;
+import com.project.likelion13th.domain.comment.dto.response.CommentResDTO;
+import com.project.likelion13th.domain.comment.entity.Comment;
+import com.project.likelion13th.domain.member.entity.Member;
+import com.project.likelion13th.domain.review.entity.Review;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Slice;
+
+import java.util.List;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class CommentConverter {
+
+    public static Comment toEntity(Member member, Review review, CommentReqDTO.CreateCommentDTO dto){
+        return Comment.builder()
+                .content(dto.getContent())
+                .review(review)
+                .member(member)
+                .build();
+    }
+
+    public static CommentResDTO.CommentDetailDTO from(Comment comment, int likeCount){
+        return CommentResDTO.CommentDetailDTO.builder()
+                .commentId(comment.getId())
+                .content(comment.getContent())
+                .author(comment.getMember().getNickname())
+                .createdAt(comment.getCreatedAt().toString())
+                .likeCount(likeCount)
+                .build();
+    }
+
+
+    public static CommentResDTO.CommentListDTO from(Slice<Object[]> comments){
+
+
+        List<CommentResDTO.CommentDetailDTO> commentDetailDTOS = comments.getContent().stream()
+                .map(data -> {
+                    Comment comment = (Comment) data[0];
+                    int likeCount = (Integer) data[1];
+                    return from(comment, likeCount);
+                }).toList();
+
+        return CommentResDTO.CommentListDTO.builder()
+                .comments(commentDetailDTOS)
+                .hasNext(comments.hasNext())
+                .nextCursor(commentDetailDTOS.isEmpty() ?
+                        0L :
+                        commentDetailDTOS.get(comments.getContent().size() - 1).getCommentId())
+                .build();
+    }
+
+}
