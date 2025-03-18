@@ -43,6 +43,6 @@ public class CommentResDTO {
         private String createdAt;
 
         @Schema(description = "좋아요 수", example = "12")
-        private Integer likeCount;
+        private Long likeCount;
     }
 }

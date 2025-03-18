@@ -1,12 +1,15 @@
 package com.project.likelion13th.domain.order.repository;
 
+import com.project.likelion13th.domain.member.entity.Member;
 import com.project.likelion13th.domain.order.entity.Order;
+import com.project.likelion13th.domain.order.entity.OrderStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
@@ -21,4 +24,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "WHERE o.member.id = :memberId AND o.id < :cursor " +
             "ORDER BY o.id DESC")
     Slice<Order> findByMemberIdAndCursor(@Param("memberId") Long memberId, @Param("cursor") Long cursor, Pageable pageable);
+
+    Optional<Order> findByMemberAndOrderStatus(Member member, OrderStatus orderStatus);
 }

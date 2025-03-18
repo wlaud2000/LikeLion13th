@@ -22,7 +22,7 @@ public class CommentConverter {
                 .build();
     }
 
-    public static CommentResDTO.CommentDetailDTO from(Comment comment, int likeCount){
+    public static CommentResDTO.CommentDetailDTO from(Comment comment, Long likeCount){
         return CommentResDTO.CommentDetailDTO.builder()
                 .commentId(comment.getId())
                 .content(comment.getContent())
@@ -39,7 +39,7 @@ public class CommentConverter {
         List<CommentResDTO.CommentDetailDTO> commentDetailDTOS = comments.getContent().stream()
                 .map(data -> {
                     Comment comment = (Comment) data[0];
-                    int likeCount = (Integer) data[1];
+                    Long likeCount = (Long) data[1];
                     return from(comment, likeCount);
                 }).toList();
 

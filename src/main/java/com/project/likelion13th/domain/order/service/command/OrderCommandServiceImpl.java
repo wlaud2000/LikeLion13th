@@ -16,6 +16,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -34,23 +38,20 @@ public class OrderCommandServiceImpl implements OrderCommandService {
         Product product = productRepository.findById(dto.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 상품을 찾을 수 없습니다."));
 
-        // Order 생성
-        Order order = Order.builder()
-                .member(member)
-                .orderStatus(OrderStatus.PROCESS)
-                .build();
-        order = orderRepository.save(order);
+        List<OrderReqDTO> orderProductDtos = new ArrayList<>();
 
-        // OrderProduct 생성
-        OrderProduct orderProduct = OrderProduct.builder()
-                .order(order)
-                .product(product)
-                .quantity(dto.getQuantity())
-                .build();
-        orderProductRepository.save(orderProduct);
+        // 기존 주문 조회 (주문 상태가 PENDING인 주문)
+        Optional<Order> newOrder = orderRepository.findByMemberAndOrderStatus(member, OrderStatus.PROCESS);
+        Order order;
+        order = newOrder.orElseGet(() -> OrderConverter.toEntity(member));
+
+        OrderProduct orderProduct = OrderConverter.toEntity(order, product, dto.getQuantity());
 
         // Order에 OrderProduct 추가
-        order.getOrderProducts().add(orderProduct);
+        order.addOrderProduct(orderProduct);
+
+        orderProductRepository.save(orderProduct);
+        orderRepository.save(order);
 
         return OrderConverter.from(order, orderProduct);
     }

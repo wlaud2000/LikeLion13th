@@ -1,14 +1,17 @@
 package com.project.likelion13th.domain.order.converter;
 
+import com.project.likelion13th.domain.member.entity.Member;
 import com.project.likelion13th.domain.order.dto.request.OrderReqDTO;
 import com.project.likelion13th.domain.order.dto.response.OrderResDTO;
 import com.project.likelion13th.domain.order.entity.Order;
 import com.project.likelion13th.domain.order.entity.OrderProduct;
+import com.project.likelion13th.domain.order.entity.OrderStatus;
 import com.project.likelion13th.domain.product.entity.Product;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Slice;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -39,5 +42,21 @@ public class OrderConverter {
                 orders.hasNext(),
                 orderDetailDTOs
         );
+    }
+
+    public static Order toEntity(Member member){
+        return Order.builder()
+                .member(member)
+                .orderStatus(OrderStatus.PROCESS)
+                .orderProducts(new ArrayList<>())
+                .build();
+    }
+
+    public static OrderProduct toEntity(Order order, Product product, int quantity){
+        return OrderProduct.builder()
+                .order(order)
+                .product(product)
+                .quantity(quantity)
+                .build();
     }
 }

@@ -38,6 +38,7 @@ public class ProductConverter {
                 .description(dto.getDescription())
                 .profileImage(dto.getImageUrl())
                 .productType(ProductType.valueOf(dto.getProductType().toUpperCase()))
+                .price(dto.getPrice())
                 .build();
     }
 }

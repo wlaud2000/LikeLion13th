@@ -38,7 +38,7 @@ public class CommentCommandServiceImpl implements CommentCommandService{
         Comment comment = CommentConverter.toEntity(member, review, dto);
         commentRepository.save(comment);
 
-        return CommentConverter.from(comment, 0);
+        return CommentConverter.from(comment, 0L);
     }
 
     @Override

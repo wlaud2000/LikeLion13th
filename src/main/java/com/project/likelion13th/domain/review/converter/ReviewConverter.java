@@ -17,7 +17,7 @@ public class ReviewConverter {
                 .content(dto.getContent())
                 .rating(dto.getRating())
                 .product(product)
-                //임의로 Member 추가
+                .member(member)
                 .build();
     }
 
