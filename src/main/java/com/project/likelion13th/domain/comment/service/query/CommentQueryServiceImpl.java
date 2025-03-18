@@ -2,7 +2,6 @@ package com.project.likelion13th.domain.comment.service.query;
 
 import com.project.likelion13th.domain.comment.converter.CommentConverter;
 import com.project.likelion13th.domain.comment.dto.response.CommentResDTO;
-import com.project.likelion13th.domain.comment.entity.Comment;
 import com.project.likelion13th.domain.comment.repository.CommentLikeRepository;
 import com.project.likelion13th.domain.comment.repository.CommentRepository;
 import com.project.likelion13th.domain.review.entity.Review;
@@ -14,8 +13,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
