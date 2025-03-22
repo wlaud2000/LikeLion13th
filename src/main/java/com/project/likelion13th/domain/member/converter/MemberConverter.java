@@ -10,21 +10,31 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberConverter {
 
-    public static Member toEntity(MemberReqDTO.RegisterDTO dto){
+    public static Member toMember(MemberReqDTO.RegisterDTO dto){
         return Member.builder()
                 .nickname(dto.getName())
                 .email(dto.getEmail())
-                .password(dto.getPassword())
+                .password(dto.getPassword()) // 실제 구현에서는 암호화 필요
                 .socialType(SocialType.LOCAL)
                 .build();
     }
 
-    public static MemberResDTO toDTO(Member member){
+    public static MemberResDTO toMemberResponseDTO(Member member){
         return MemberResDTO.builder()
                 .userId(member.getId())
                 .email(member.getEmail())
                 .name(member.getNickname())
                 .createAt(member.getCreatedAt())
+                .build();
+    }
+
+    // 프로필 업데이트 결과 DTO
+    public static MemberResDTO toProfileDTO(Member member) {
+        return MemberResDTO.builder()
+                .userId(member.getId())
+                .name(member.getNickname())
+                .email(member.getEmail())
+                .updatedAt(member.getUpdatedAt())
                 .build();
     }
 

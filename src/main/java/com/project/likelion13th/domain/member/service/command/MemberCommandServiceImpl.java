@@ -4,6 +4,8 @@ import com.project.likelion13th.domain.member.converter.MemberConverter;
 import com.project.likelion13th.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion13th.domain.member.dto.response.MemberResDTO;
 import com.project.likelion13th.domain.member.entity.Member;
+import com.project.likelion13th.domain.member.exception.MemberErrorCode;
+import com.project.likelion13th.domain.member.exception.MemberException;
 import com.project.likelion13th.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,9 +18,44 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
     @Override
     public MemberResDTO createMember(MemberReqDTO.RegisterDTO dto) {
-        Member member = MemberConverter.toEntity(dto);
+        Member member = MemberConverter.toMember(dto);
         memberRepository.save(member);
 
-        return MemberConverter.toDTO(member);
+        return MemberConverter.toMemberResponseDTO(member);
+    }
+
+    @Override
+    public MemberResDTO updateProfile(Long memberId, MemberReqDTO.UpdateProfileDTO dto) {
+        // 회원 정보 조회
+        Member member = memberRepository.findByIdAndNotDeleted(memberId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        // 프로필 업데이트
+        member.updateProfile(dto.getNickname());
+        memberRepository.save(member);
+
+        return MemberConverter.toProfileDTO(member);
+    }
+
+    @Override
+    public void updatePassword(Long memberId, MemberReqDTO.PasswordResetDTO dto) {
+        // 회원 정보 조회
+        Member member = memberRepository.findByIdAndNotDeleted(memberId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        // 실제 구현에서는 비밀번호 암호화 로직 필요
+        member.updatePassword(dto.getPassword());
+        memberRepository.save(member);
+    }
+
+    @Override
+    public void deleteMember(Long memberId) {
+        // 회원 정보 조회
+        Member member = memberRepository.findByIdAndNotDeleted(memberId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        // soft delete 처리
+        member.delete();
+        memberRepository.save(member);
     }
 }

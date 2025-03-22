@@ -4,6 +4,7 @@ import com.project.likelion13th.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion13th.domain.member.dto.response.MemberResDTO;
 import com.project.likelion13th.domain.member.service.command.MemberCommandService;
 import com.project.likelion13th.domain.member.service.query.MemberQueryService;
+import com.project.likelion13th.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -54,14 +55,41 @@ public class MemberController {
     }
 
     // ✅ 비밀번호 수정 (JWT 인증 필요)
-    @PostMapping("/password-reset")
-    @Operation(summary = "비밀번호 수정", description = "JWT 인증을 기반으로 사용자의 비밀번호를 수정합니다.")
+    @PatchMapping("/members/{memberId}/password")
+    @Operation(summary = "비밀번호 수정", description = "회원의 비밀번호를 수정합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "비밀번호 수정 성공", content = @Content(schema = @Schema(implementation = String.class)))
+            @ApiResponse(responseCode = "200", description = "비밀번호 수정 성공")
     })
-    public ResponseEntity<String> resetPassword(
+    public CustomResponse<String> resetPassword(
+            @PathVariable Long memberId,
             @RequestBody MemberReqDTO.PasswordResetDTO request
     ) {
-        return ResponseEntity.ok(null);
+        memberCommandService.updatePassword(memberId, request);
+        return CustomResponse.onSuccess("비밀번호 변경 성공");
+    }
+
+    // ✅ 프로필 수정 (JWT 인증 필요)
+    @PatchMapping("/members/{memberId}/profile")
+    @Operation(summary = "프로필 수정", description = "회원의 프로필 정보를 수정합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "프로필 수정 성공", content = @Content(schema = @Schema(implementation = MemberResDTO.class)))
+    })
+    public CustomResponse<MemberResDTO> updateProfile(
+            @PathVariable Long memberId,
+            @RequestBody MemberReqDTO.UpdateProfileDTO request
+    ) {
+        MemberResDTO response = memberCommandService.updateProfile(memberId, request);
+        return CustomResponse.onSuccess(response);
+    }
+
+    // ✅ 회원 탈퇴 (JWT 인증 필요)
+    @DeleteMapping("/members/{memberId}")
+    @Operation(summary = "회원 탈퇴", description = "회원 계정을 삭제합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공")
+    })
+    public CustomResponse<String> deleteMember(@PathVariable Long memberId) {
+        memberCommandService.deleteMember(memberId);
+        return CustomResponse.onSuccess("회원 탈퇴 성공");
     }
 }

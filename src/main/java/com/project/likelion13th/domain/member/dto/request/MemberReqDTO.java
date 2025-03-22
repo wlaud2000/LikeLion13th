@@ -53,4 +53,11 @@ public class MemberReqDTO {
         @Size(min = 8, max = 20, message = "비밀번호는 8~20자 사이여야 합니다.")
         private String password;
     }
+
+    @Getter
+    public static class UpdateProfileDTO {
+        @Schema(description = "닉네임", example = "새로운닉네임")
+        @NotBlank(message = "닉네임은 필수 입력값입니다.")
+        private String nickname;
+    }
 }

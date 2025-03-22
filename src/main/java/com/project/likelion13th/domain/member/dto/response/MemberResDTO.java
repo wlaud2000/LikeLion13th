@@ -31,4 +31,7 @@ public class MemberResDTO {
 
     @Schema(description = "생성일", example = "2222-11-11")
     private LocalDateTime createAt;
+
+    @Schema(description = "수정일", example = "2222-11-11")
+    private LocalDateTime updatedAt;
 }
