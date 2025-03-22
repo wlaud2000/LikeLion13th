@@ -11,13 +11,13 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    // 첫 페이지 조회
+    // 첫 페이지 조회 - 삭제되지 않은 댓글만
     @Query("SELECT c, (SELECT COUNT(cl) FROM CommentLike cl WHERE cl.comment = c) AS likeCount " +
-            "FROM Comment c WHERE c.review = :review ORDER BY c.id DESC")
+            "FROM Comment c WHERE c.review = :review AND c.deletedAt IS NULL ORDER BY c.id DESC")
     Slice<Object[]> findFirstPageWithLikeCount(@Param("review") Review review, Pageable pageable);
 
-    // 커서 기반 페이지 조회
+    // 커서 기반 페이지 조회 - 삭제되지 않은 댓글만
     @Query("SELECT c, (SELECT COUNT(cl) FROM CommentLike cl WHERE cl.comment = c) AS likeCount " +
-            "FROM Comment c WHERE c.review = :review AND c.id < :cursor ORDER BY c.id DESC")
+            "FROM Comment c WHERE c.review = :review AND c.id < :cursor AND c.deletedAt IS NULL ORDER BY c.id DESC")
     Slice<Object[]> findByCursorWithLikeCount(@Param("review") Review review, @Param("cursor") Long cursor, Pageable pageable);
 }

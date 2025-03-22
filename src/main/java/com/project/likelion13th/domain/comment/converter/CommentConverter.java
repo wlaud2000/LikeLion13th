@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommentConverter {
 
-    public static Comment toEntity(Member member, Review review, CommentReqDTO.CreateCommentDTO dto){
+    public static Comment toComment(Member member, Review review, CommentReqDTO.CreateCommentDTO dto){
         return Comment.builder()
                 .content(dto.getContent())
                 .review(review)
@@ -22,7 +22,7 @@ public class CommentConverter {
                 .build();
     }
 
-    public static CommentResDTO.CommentDetailDTO from(Comment comment, Long likeCount){
+    public static CommentResDTO.CommentDetailDTO toCommentDetailDTO(Comment comment, Long likeCount){
         return CommentResDTO.CommentDetailDTO.builder()
                 .commentId(comment.getId())
                 .content(comment.getContent())
@@ -33,14 +33,14 @@ public class CommentConverter {
     }
 
 
-    public static CommentResDTO.CommentListDTO from(Slice<Object[]> comments){
+    public static CommentResDTO.CommentListDTO toCommentListDTO(Slice<Object[]> comments){
 
 
         List<CommentResDTO.CommentDetailDTO> commentDetailDTOS = comments.getContent().stream()
                 .map(data -> {
                     Comment comment = (Comment) data[0];
                     Long likeCount = (Long) data[1];
-                    return from(comment, likeCount);
+                    return toCommentDetailDTO(comment, likeCount);
                 }).toList();
 
         return CommentResDTO.CommentListDTO.builder()

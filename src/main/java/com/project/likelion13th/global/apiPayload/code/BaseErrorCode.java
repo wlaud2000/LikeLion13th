@@ -1,6 +1,6 @@
 package com.project.likelion13th.global.apiPayload.code;
 
-import com.project.likelion13th.global.apiPayload.ApiResponse;
+import com.project.likelion13th.global.apiPayload.CustomResponse;
 import org.springframework.http.HttpStatus;
 
 public interface BaseErrorCode {
@@ -9,7 +9,7 @@ public interface BaseErrorCode {
     String getCode();
     String getMessage();
 
-    default ApiResponse<Void> getErrorResponse() {
-        return ApiResponse.onFailure(getCode(), getMessage());
+    default CustomResponse<Void> getErrorResponse() {
+        return CustomResponse.onFailure(getCode(), getMessage());
     }
 }

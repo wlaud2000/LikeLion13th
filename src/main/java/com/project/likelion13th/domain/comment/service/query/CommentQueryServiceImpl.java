@@ -38,6 +38,6 @@ public class CommentQueryServiceImpl implements CommentQueryService {
         }
 
 
-        return CommentConverter.from(comments);
+        return CommentConverter.toCommentListDTO(comments);
     }
 }
