@@ -11,9 +11,9 @@ import org.springframework.data.domain.Slice;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProductConverter {
 
-    public static ProductResDTO.ProductListDTO from(Slice<Product> products){
+    public static ProductResDTO.ProductListDTO toProductListDTO(Slice<Product> products){
         return ProductResDTO.ProductListDTO.builder()
-                .products(products.stream().map(ProductConverter::from).toList())
+                .products(products.stream().map(ProductConverter::toProductDetailDTO).toList())
                 .hasNext(products.hasNext())
                 .nextCursor(products.isEmpty() ?
                         0L :
@@ -21,7 +21,7 @@ public class ProductConverter {
                 .build();
     }
 
-    public static ProductResDTO.ProductDetailDTO from(Product product){
+    public static ProductResDTO.ProductDetailDTO toProductDetailDTO(Product product){
         return ProductResDTO.ProductDetailDTO.builder()
                 .productId(product.getId())
                 .name(product.getName())
@@ -32,7 +32,7 @@ public class ProductConverter {
                 .build();
     }
 
-    public static Product toEntity(ProductReqDTO.CreateProductDTO dto){
+    public static Product toProduct(ProductReqDTO.CreateProductDTO dto){
         return Product.builder()
                 .name(dto.getName())
                 .description(dto.getDescription())

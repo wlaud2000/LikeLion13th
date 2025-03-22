@@ -34,7 +34,7 @@ public class ProductQueryServiceImpl implements ProductQueryService {
             products = productRepository.findByCursor(productType, cursor, pageable);
         }
 
-        return ProductConverter.from(products);
+        return ProductConverter.toProductListDTO(products);
     }
 
     @Override
@@ -42,6 +42,6 @@ public class ProductQueryServiceImpl implements ProductQueryService {
         Product product = productRepository.findById(productId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 productId입니다."));  // TODO CustomError 처리
 
-        return ProductConverter.from(product);
+        return ProductConverter.toProductDetailDTO(product);
     }
 }
