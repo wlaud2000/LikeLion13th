@@ -1,12 +1,14 @@
-package com.project.likelion13th.domain.review.controller;
+package com.project.likelion13th.domain.comment.controller;
 
-import com.project.likelion13th.domain.review.dto.request.CommentReqDTO;
-import com.project.likelion13th.domain.review.dto.response.CommentResDTO;
+import com.project.likelion13th.domain.comment.dto.request.CommentReqDTO;
+import com.project.likelion13th.domain.comment.dto.response.CommentResDTO;
+import com.project.likelion13th.domain.comment.service.command.CommentCommandService;
+import com.project.likelion13th.domain.comment.service.query.CommentQueryService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Tag(name = "Comment API", description = "댓글 관련 API")
 public class CommentController {
+    private final CommentQueryService commentQueryService;
+    private final CommentCommandService commentCommandService;
 
     @GetMapping("/reviews/{reviewId}/comments")
     @Operation(summary = "댓글 목록 조회", description = "특정 리뷰에 대한 댓글 목록을 조회합니다.")
@@ -25,10 +29,11 @@ public class CommentController {
     })
     public ResponseEntity<CommentResDTO.CommentListDTO> getComments(
             @PathVariable Long reviewId,
-            @RequestParam Integer cursor,
+            @RequestParam Long cursor,
             @RequestParam Integer size
     ) {
-        return ResponseEntity.ok(null);
+        CommentResDTO.CommentListDTO response = commentQueryService.getCommentList(reviewId, cursor, size);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/reviews/{reviewId}/comments")
@@ -37,7 +42,9 @@ public class CommentController {
             @ApiResponse(responseCode = "200", description = "댓글 작성 성공", content = @Content(schema = @Schema(implementation = CommentResDTO.CommentDetailDTO.class)))
     })
     public ResponseEntity<CommentResDTO.CommentDetailDTO> createComment(@PathVariable Long reviewId, @RequestBody CommentReqDTO.CreateCommentDTO request) {
-        return ResponseEntity.ok(null);
+
+        CommentResDTO.CommentDetailDTO response = commentCommandService.createComment(reviewId, request);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/comments/{commentId}")
@@ -63,7 +70,7 @@ public class CommentController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "댓글 좋아요 성공")
     })
-    public ResponseEntity<Void> likeComment(@PathVariable Long commentId) {
-        return ResponseEntity.ok(null);
+    public ResponseEntity<String> likeComment(@PathVariable Long commentId) {
+        return ResponseEntity.ok("좋아요 성공");
     }
 }

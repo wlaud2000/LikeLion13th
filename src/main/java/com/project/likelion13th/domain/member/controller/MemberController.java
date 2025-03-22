@@ -2,6 +2,8 @@ package com.project.likelion13th.domain.member.controller;
 
 import com.project.likelion13th.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion13th.domain.member.dto.response.MemberResDTO;
+import com.project.likelion13th.domain.member.service.command.MemberCommandService;
+import com.project.likelion13th.domain.member.service.query.MemberQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Tag(name = "Member API", description = "회원 관련 API")
 public class MemberController {
+    private final MemberCommandService memberCommandService;
+    private final MemberQueryService memberQueryService;
 
     // ✅ 회원가입
     @PostMapping("/auth")
@@ -24,8 +28,9 @@ public class MemberController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = MemberResDTO.class)))
     })
-    public ResponseEntity<MemberResDTO> register() {
-        return ResponseEntity.ok(null);
+    public ResponseEntity<MemberResDTO> register(@RequestBody MemberReqDTO.RegisterDTO dto) {
+        MemberResDTO response = memberCommandService.createMember(dto);
+        return ResponseEntity.ok(response);
     }
 
     // ✅ 일반 로그인

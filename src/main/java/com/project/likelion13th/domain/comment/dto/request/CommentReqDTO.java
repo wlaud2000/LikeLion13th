@@ -1,4 +1,4 @@
-package com.project.likelion13th.domain.review.dto.request;
+package com.project.likelion13th.domain.comment.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
