@@ -11,6 +11,8 @@ import com.project.likelion13th.domain.comment.exception.CommentException;
 import com.project.likelion13th.domain.comment.repository.CommentLikeRepository;
 import com.project.likelion13th.domain.comment.repository.CommentRepository;
 import com.project.likelion13th.domain.member.entity.Member;
+import com.project.likelion13th.domain.member.exception.MemberErrorCode;
+import com.project.likelion13th.domain.member.exception.MemberException;
 import com.project.likelion13th.domain.member.repository.MemberRepository;
 import com.project.likelion13th.domain.review.entity.Review;
 import com.project.likelion13th.domain.review.repository.ReviewRepository;
@@ -34,7 +36,7 @@ public class CommentCommandServiceImpl implements CommentCommandService{
     public CommentResDTO.CommentDetailDTO createComment(Long reviewId, CommentReqDTO.CreateCommentDTO dto) {
         // 임시로 Member 설정 (실제로는 인증된 사용자 정보를 사용)
         Member member = memberRepository.findById(1L)
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다.")); // TODO CustomError 처리
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Review review = reviewRepository.findById(reviewId).orElseThrow(
                 () -> new IllegalArgumentException("reviewId에 해당하는 리뷰가 없습니다."));   // TODO CustomError 처리
@@ -49,7 +51,7 @@ public class CommentCommandServiceImpl implements CommentCommandService{
     public CommentResDTO.CommentDetailDTO updateComment(Long commentId, CommentReqDTO.UpdateCommentDTO dto) {
         // 임시로 Member 설정 (실제로는 인증된 사용자 정보를 사용)
         Member member = memberRepository.findById(1L)
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다.")); // TODO CustomError 처리
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentException(CommentErrorCode.COMMENT_NOT_FOUND));
@@ -80,7 +82,7 @@ public class CommentCommandServiceImpl implements CommentCommandService{
     public void deleteComment(Long commentId) {
         // 임시로 Member 설정 (실제로는 인증된 사용자 정보를 사용)
         Member member = memberRepository.findById(1L)
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다.")); // TODO CustomError 처리
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentException(CommentErrorCode.COMMENT_NOT_FOUND));

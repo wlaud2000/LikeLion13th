@@ -20,4 +20,13 @@ public class OrderReqDTO {
         @NotNull(message = "주문 수량은 필수 입력값입니다.")
         private Integer quantity;
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class UpdateOrderStatusDTO {
+        @Schema(description = "주문 상태", example = "DELIVERED")
+        @NotNull(message = "주문 상태는 필수 입력값입니다.")
+        private String orderStatus;
+    }
 }
