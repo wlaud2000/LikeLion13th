@@ -52,4 +52,12 @@ public class CommentConverter {
                 .build();
     }
 
+    public static CommentResDTO.LikeResultDTO toLikeResultDTO(Long commentId, Boolean isLiked, Long likeCount) {
+        return CommentResDTO.LikeResultDTO.builder()
+                .commentId(commentId)
+                .isLiked(isLiked)
+                .likeCount(likeCount)
+                .build();
+    }
+
 }

@@ -29,13 +29,13 @@ public class ProductController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "상품 목록 조회 성공", content = @Content(schema = @Schema(implementation = ProductResDTO.ProductListDTO.class)))
     })
-    public ResponseEntity<ProductResDTO.ProductListDTO> getProducts(
+    public CustomResponse<ProductResDTO.ProductListDTO> getProducts(
             @RequestParam String category,
             @RequestParam Long cursor,
             @RequestParam int size
     ) {
         ProductResDTO.ProductListDTO response = productQueryService.getProductPage(category, cursor, size);
-        return ResponseEntity.ok(response);
+        return CustomResponse.onSuccess(response);
     }
 
     @GetMapping("/{productId}")
@@ -43,9 +43,9 @@ public class ProductController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "상품 상세 조회 성공", content = @Content(schema = @Schema(implementation = ProductResDTO.ProductDetailDTO.class)))
     })
-    public ResponseEntity<ProductResDTO.ProductDetailDTO> getProduct(@PathVariable Long productId) {
+    public CustomResponse<ProductResDTO.ProductDetailDTO> getProduct(@PathVariable Long productId) {
         ProductResDTO.ProductDetailDTO response = productQueryService.getProduct(productId);
-        return ResponseEntity.ok(response);
+        return CustomResponse.onSuccess(response);
     }
 
     @PostMapping
@@ -53,9 +53,9 @@ public class ProductController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "상품 추가 성공", content = @Content(schema = @Schema(implementation = ProductResDTO.ProductDetailDTO.class)))
     })
-    public ResponseEntity<ProductResDTO.ProductDetailDTO> addProduct(@RequestBody ProductReqDTO.CreateProductDTO createProductDTO) {
+    public CustomResponse<ProductResDTO.ProductDetailDTO> addProduct(@RequestBody ProductReqDTO.CreateProductDTO createProductDTO) {
         ProductResDTO.ProductDetailDTO response = productCommandService.createProduct(createProductDTO);
-        return ResponseEntity.ok(response);
+        return CustomResponse.onSuccess(response);
     }
 
     @DeleteMapping("/{productId}")

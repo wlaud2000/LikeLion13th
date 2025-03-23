@@ -59,7 +59,6 @@ public class ReviewCommandServiceImpl implements ReviewCommandService{
 
         // 리뷰 내용 및 평점 업데이트
         review.updateReview(dto.getContent(), dto.getRating());
-        reviewRepository.save(review);
 
         return ReviewConverter.toReviewDetailDTO(review);
     }
@@ -81,6 +80,5 @@ public class ReviewCommandServiceImpl implements ReviewCommandService{
 
         // soft delete 처리
         review.delete();
-        reviewRepository.save(review);
     }
 }

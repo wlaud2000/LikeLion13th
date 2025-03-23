@@ -29,9 +29,9 @@ public class MemberController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = MemberResDTO.class)))
     })
-    public ResponseEntity<MemberResDTO> register(@RequestBody MemberReqDTO.RegisterDTO dto) {
+    public CustomResponse<MemberResDTO> register(@RequestBody MemberReqDTO.RegisterDTO dto) {
         MemberResDTO response = memberCommandService.createMember(dto);
-        return ResponseEntity.ok(response);
+        return CustomResponse.onSuccess(response);
     }
 
     // ✅ 일반 로그인
@@ -40,8 +40,8 @@ public class MemberController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(schema = @Schema(implementation = MemberResDTO.class)))
     })
-    public ResponseEntity<MemberResDTO> login(@RequestBody MemberReqDTO.LoginDTO loginDTO) {
-        return ResponseEntity.ok(null);
+    public CustomResponse<MemberResDTO> login(@RequestBody MemberReqDTO.LoginDTO loginDTO) {
+        return CustomResponse.onSuccess(null);
     }
 
     // ✅ 카카오 로그인
@@ -50,8 +50,8 @@ public class MemberController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "카카오 로그인 성공", content = @Content(schema = @Schema(implementation = MemberResDTO.class)))
     })
-    public ResponseEntity<MemberResDTO> kakaoLogin(@RequestBody MemberReqDTO.KakaoLoginDTO request) {
-        return ResponseEntity.ok(null);
+    public CustomResponse<MemberResDTO> kakaoLogin(@RequestBody MemberReqDTO.KakaoLoginDTO request) {
+        return CustomResponse.onSuccess(null);
     }
 
     // ✅ 비밀번호 수정 (JWT 인증 필요)

@@ -72,9 +72,6 @@ public class CommentCommandServiceImpl implements CommentCommandService{
         // 댓글 내용 업데이트
         comment.updateContent(dto.getContent());
 
-        // 댓글 저장
-        commentRepository.save(comment);
-
         // 댓글 좋아요 수 조회
         Long likeCount = commentLikeRepository.countByCommentId(commentId);
 
@@ -102,18 +99,16 @@ public class CommentCommandServiceImpl implements CommentCommandService{
 
         // soft delete 처리
         comment.delete();
-        commentRepository.save(comment);
 
         // CommentLike 엔티티도 함께 소프트 딜리트 처리
         List<CommentLike> commentLikes = commentLikeRepository.findAllByComment(comment);
         for (CommentLike like : commentLikes) {
             like.delete();
         }
-        commentLikeRepository.saveAll(commentLikes);
     }
 
     @Override
-    public Long commentLike(Long commentId) {
+    public CommentResDTO.LikeResultDTO commentLike(Long commentId) {
         // 임시로 Member 설정 (실제로는 인증된 사용자 정보를 사용)
         Member member = memberRepository.findById(1L)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
@@ -129,16 +124,23 @@ public class CommentCommandServiceImpl implements CommentCommandService{
         // 이미 좋아요를 눌렀는지 확인
         Optional<CommentLike> existingLike = commentLikeRepository.findByMemberAndComment(member, comment);
 
+        boolean isLiked;
+
         if (existingLike.isPresent()) {
             // 이미 좋아요가 있으면 좋아요 취소 (좋아요 삭제)
             commentLikeRepository.delete(existingLike.get());
+            isLiked = false;
         } else {
             // 좋아요가 없으면 새로 추가
             CommentLike commentLike = CommentLikeConverter.toEntity(member, comment);
             commentLikeRepository.save(commentLike);
+            isLiked = true;
         }
 
-        // 좋아요 개수 반환
-        return commentLikeRepository.countByCommentId(commentId);
+        // 좋아요 개수 조회
+        Long likeCount = commentLikeRepository.countByCommentId(commentId);
+
+        // DTO 생성 및 반환
+        return CommentConverter.toLikeResultDTO(commentId, isLiked, likeCount);
     }
 }

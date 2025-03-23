@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -43,11 +42,10 @@ public class CommentController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "댓글 작성 성공", content = @Content(schema = @Schema(implementation = CommentResDTO.CommentDetailDTO.class)))
     })
-    public ResponseEntity<CustomResponse<CommentResDTO.CommentDetailDTO>> createComment(@PathVariable Long reviewId, @RequestBody CommentReqDTO.CreateCommentDTO request) {
+    public CustomResponse<CommentResDTO.CommentDetailDTO> createComment(@PathVariable Long reviewId, @RequestBody CommentReqDTO.CreateCommentDTO request) {
 
         CommentResDTO.CommentDetailDTO response = commentCommandService.createComment(reviewId, request);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(CustomResponse.onSuccess(HttpStatus.CREATED, response));
+        return CustomResponse.onSuccess(HttpStatus.CREATED, response);
     }
 
     @PatchMapping("/comments/{commentId}")
@@ -73,10 +71,10 @@ public class CommentController {
     @PostMapping("/comments/{commentId}/like")
     @Operation(summary = "댓글 좋아요", description = "특정 댓글에 좋아요를 추가/취소합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "댓글 좋아요 성공")
+            @ApiResponse(responseCode = "200", description = "댓글 좋아요 성공", content = @Content(schema = @Schema(implementation = CommentResDTO.LikeResultDTO.class)))
     })
-    public CustomResponse<Long> likeComment(@PathVariable Long commentId) {
-        Long likeCount = commentCommandService.commentLike(commentId);
+    public CustomResponse<CommentResDTO.LikeResultDTO> likeComment(@PathVariable Long commentId) {
+        CommentResDTO.LikeResultDTO likeCount = commentCommandService.commentLike(commentId);
         return CustomResponse.onSuccess(likeCount);
     }
 }

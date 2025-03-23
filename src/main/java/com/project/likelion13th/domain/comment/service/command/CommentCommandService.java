@@ -7,5 +7,5 @@ public interface CommentCommandService {
     CommentResDTO.CommentDetailDTO createComment(Long reviewId, CommentReqDTO.CreateCommentDTO dto);
     CommentResDTO.CommentDetailDTO updateComment(Long commentId, CommentReqDTO.UpdateCommentDTO dto);
     void deleteComment(Long commentId);
-    Long commentLike(Long commentId);
+    CommentResDTO.LikeResultDTO commentLike(Long commentId);
 }

@@ -4,6 +4,7 @@ import com.project.likelion13th.global.apiPayload.CustomResponse;
 import com.project.likelion13th.global.apiPayload.code.BaseErrorCode;
 import com.project.likelion13th.global.apiPayload.code.GeneralErrorCode;
 import com.project.likelion13th.global.apiPayload.exception.CustomException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -35,6 +36,34 @@ public class GlobalExceptionHandler {
         );
         // 에러 코드, 메시지와 함께 errors를 반환
         return ResponseEntity.status(validationErrorCode.getHttpStatus()).body(errorResponse);
+    }
+
+    // ConstraintViolationException 핸들러 추가
+    @ExceptionHandler(ConstraintViolationException.class)
+    protected ResponseEntity<CustomResponse<Map<String, String>>> handleConstraintViolationException(
+            ConstraintViolationException ex) {
+        // 제약 조건 위반 정보를 저장할 Map
+        Map<String, String> errors = new HashMap<>();
+
+        ex.getConstraintViolations().forEach(violation -> {
+            String propertyPath = violation.getPropertyPath().toString();
+            // 마지막 필드명만 추출 (예: user.name -> name)
+            String fieldName = propertyPath.contains(".") ?
+                    propertyPath.substring(propertyPath.lastIndexOf(".") + 1) : propertyPath;
+
+            errors.put(fieldName, violation.getMessage());
+        });
+
+        BaseErrorCode constraintErrorCode = GeneralErrorCode.VALIDATION_FAILED;
+        CustomResponse<Map<String, String>> errorResponse = CustomResponse.onFailure(
+                constraintErrorCode.getCode(),
+                constraintErrorCode.getMessage(),
+                errors
+        );
+
+        log.warn("[ ConstraintViolationException ]: Constraint violations detected");
+
+        return ResponseEntity.status(constraintErrorCode.getHttpStatus()).body(errorResponse);
     }
 
     //애플리케이션에서 발생하는 커스텀 예외를 처리

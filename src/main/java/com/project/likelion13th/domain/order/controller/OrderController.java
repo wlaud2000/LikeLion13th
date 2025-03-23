@@ -29,11 +29,11 @@ public class OrderController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "주문 추가 성공", content = @Content(schema = @Schema(implementation = OrderResDTO.OrderDetailDTO.class)))
     })
-    public ResponseEntity<OrderResDTO.OrderDetailDTO> createOrder(@RequestBody OrderReqDTO.CreateOrderDTO request) {
+    public CustomResponse<OrderResDTO.OrderDetailDTO> createOrder(@RequestBody OrderReqDTO.CreateOrderDTO request) {
 
         OrderResDTO.OrderDetailDTO response = orderCommandService.createOrder(request);
 
-        return ResponseEntity.ok(response);
+        return CustomResponse.onSuccess(response);
     }
 
     @GetMapping("/me")
@@ -41,12 +41,12 @@ public class OrderController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "내 주문 조회 성공", content = @Content(schema = @Schema(implementation = OrderResDTO.OrderListDTO.class)))
     })
-    public ResponseEntity<OrderResDTO.OrderListDTO> getMyOrders(
+    public CustomResponse<OrderResDTO.OrderListDTO> getMyOrders(
             @RequestParam Long cursor,
             @RequestParam Integer size
     ) {
         OrderResDTO.OrderListDTO response = orderQueryService.getMyOrder(cursor, size);
-        return ResponseEntity.ok(response);
+        return CustomResponse.onSuccess(response);
     }
 
     @PatchMapping("/{orderId}/status")

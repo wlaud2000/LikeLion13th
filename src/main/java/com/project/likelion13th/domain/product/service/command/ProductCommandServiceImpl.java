@@ -42,6 +42,5 @@ public class ProductCommandServiceImpl implements ProductCommandService {
 
         // soft delete 처리
         product.delete();
-        productRepository.save(product);
     }
 }

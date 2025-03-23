@@ -32,7 +32,6 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         // 프로필 업데이트
         member.updateProfile(dto.getNickname());
-        memberRepository.save(member);
 
         return MemberConverter.toProfileDTO(member);
     }
@@ -45,7 +44,6 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         // 실제 구현에서는 비밀번호 암호화 로직 필요
         member.updatePassword(dto.getPassword());
-        memberRepository.save(member);
     }
 
     @Override
@@ -56,6 +54,5 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         // soft delete 처리
         member.delete();
-        memberRepository.save(member);
     }
 }

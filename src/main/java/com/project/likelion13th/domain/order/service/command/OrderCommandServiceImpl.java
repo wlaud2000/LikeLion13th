@@ -93,7 +93,6 @@ public class OrderCommandServiceImpl implements OrderCommandService {
         }
 
         order.updateOrderStatus(newStatus);
-        orderRepository.save(order);
 
         // 응답 생성 (첫 번째 주문 상품을 사용하여 응답 생성)
         if (!order.getOrderProducts().isEmpty()) {
@@ -134,7 +133,5 @@ public class OrderCommandServiceImpl implements OrderCommandService {
 
         // soft delete 처리
         order.delete();
-
-        orderRepository.save(order);
     }
 }
