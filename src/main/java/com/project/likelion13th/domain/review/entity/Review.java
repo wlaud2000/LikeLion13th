@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Builder
@@ -35,4 +37,23 @@ public class Review extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    // soft delete를 위한 필드 추가
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    // 리뷰 내용 및 평점 업데이트 메서드
+    public void updateReview(String content, Double rating) {
+        this.content = content;
+        this.rating = rating;
+    }
+
+    // soft delete 메서드
+    public void delete() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+    // 삭제 여부 확인 메서드
+    public boolean isDeleted() {
+        return deletedAt != null;
+    }
 }

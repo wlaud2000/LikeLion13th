@@ -15,11 +15,14 @@ import com.project.likelion13th.domain.member.exception.MemberErrorCode;
 import com.project.likelion13th.domain.member.exception.MemberException;
 import com.project.likelion13th.domain.member.repository.MemberRepository;
 import com.project.likelion13th.domain.review.entity.Review;
+import com.project.likelion13th.domain.review.exception.ReviewErrorCode;
+import com.project.likelion13th.domain.review.exception.ReviewException;
 import com.project.likelion13th.domain.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -38,8 +41,8 @@ public class CommentCommandServiceImpl implements CommentCommandService{
         Member member = memberRepository.findById(1L)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-        Review review = reviewRepository.findById(reviewId).orElseThrow(
-                () -> new IllegalArgumentException("reviewId에 해당하는 리뷰가 없습니다."));   // TODO CustomError 처리
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
 
         Comment comment = CommentConverter.toComment(member, review, dto);
         commentRepository.save(comment);
@@ -100,13 +103,20 @@ public class CommentCommandServiceImpl implements CommentCommandService{
         // soft delete 처리
         comment.delete();
         commentRepository.save(comment);
+
+        // CommentLike 엔티티도 함께 소프트 딜리트 처리
+        List<CommentLike> commentLikes = commentLikeRepository.findAllByComment(comment);
+        for (CommentLike like : commentLikes) {
+            like.delete();
+        }
+        commentLikeRepository.saveAll(commentLikes);
     }
 
     @Override
     public Long commentLike(Long commentId) {
         // 임시로 Member 설정 (실제로는 인증된 사용자 정보를 사용)
         Member member = memberRepository.findById(1L)
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다.")); // TODO CustomError 처리
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentException(CommentErrorCode.COMMENT_NOT_FOUND));

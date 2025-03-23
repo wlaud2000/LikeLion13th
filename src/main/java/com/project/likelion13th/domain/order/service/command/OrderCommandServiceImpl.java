@@ -15,6 +15,8 @@ import com.project.likelion13th.domain.order.exception.OrderException;
 import com.project.likelion13th.domain.order.repository.OrderProductRepository;
 import com.project.likelion13th.domain.order.repository.OrderRepository;
 import com.project.likelion13th.domain.product.entity.Product;
+import com.project.likelion13th.domain.product.exception.ProductErrorCode;
+import com.project.likelion13th.domain.product.exception.ProductException;
 import com.project.likelion13th.domain.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,7 +44,7 @@ public class OrderCommandServiceImpl implements OrderCommandService {
 
         // Product 조회
         Product product = productRepository.findById(dto.getProductId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 상품을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
         List<OrderReqDTO> orderProductDtos = new ArrayList<>();
 

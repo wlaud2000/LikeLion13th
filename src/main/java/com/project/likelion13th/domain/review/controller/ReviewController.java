@@ -4,6 +4,7 @@ import com.project.likelion13th.domain.review.dto.request.ReviewReqDTO;
 import com.project.likelion13th.domain.review.dto.response.ReviewResDTO;
 import com.project.likelion13th.domain.review.service.command.ReviewCommandService;
 import com.project.likelion13th.domain.review.service.query.ReviewQueryService;
+import com.project.likelion13th.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -61,8 +62,9 @@ public class ReviewController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "리뷰 수정 성공", content = @Content(schema = @Schema(implementation = ReviewResDTO.ReviewDetailDTO.class)))
     })
-    public ResponseEntity<ReviewResDTO.ReviewDetailDTO> updateReview(@PathVariable Long reviewId, @RequestBody ReviewReqDTO.UpdateReviewDTO updateReviewDTO) {
-        return ResponseEntity.ok(null);
+    public CustomResponse<ReviewResDTO.ReviewDetailDTO> updateReview(@PathVariable Long reviewId, @RequestBody ReviewReqDTO.UpdateReviewDTO updateReviewDTO) {
+        ReviewResDTO.ReviewDetailDTO response = reviewCommandService.updateReview(reviewId, updateReviewDTO);
+        return CustomResponse.onSuccess(response);
     }
 
     @DeleteMapping("/reviews/{reviewId}")
@@ -70,8 +72,9 @@ public class ReviewController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "리뷰 삭제 성공")
     })
-    public ResponseEntity<Void> deleteReview(@PathVariable Long reviewId) {
-        return ResponseEntity.ok(null);
+    public CustomResponse<String> deleteReview(@PathVariable Long reviewId) {
+        reviewCommandService.deleteReview(reviewId);
+        return CustomResponse.onSuccess("리뷰 삭제 성공");
     }
 
     @GetMapping("/reviews/me")

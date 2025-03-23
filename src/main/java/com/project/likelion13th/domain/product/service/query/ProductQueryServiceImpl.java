@@ -5,6 +5,8 @@ import com.project.likelion13th.domain.product.converter.ProductConverter;
 import com.project.likelion13th.domain.product.dto.response.ProductResDTO;
 import com.project.likelion13th.domain.product.entity.Product;
 import com.project.likelion13th.domain.product.entity.ProductType;
+import com.project.likelion13th.domain.product.exception.ProductErrorCode;
+import com.project.likelion13th.domain.product.exception.ProductException;
 import com.project.likelion13th.domain.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -39,8 +41,8 @@ public class ProductQueryServiceImpl implements ProductQueryService {
 
     @Override
     public ProductResDTO.ProductDetailDTO getProduct(Long productId) {
-        Product product = productRepository.findById(productId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 productId입니다."));  // TODO CustomError 처리
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
         return ProductConverter.toProductDetailDTO(product);
     }

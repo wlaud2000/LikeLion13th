@@ -41,15 +41,6 @@ public class Product extends BaseEntity {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    // 상품 정보 업데이트 메서드
-    public void updateProduct(String name, String description, String profileImage, Double price, ProductType productType) {
-        this.name = name;
-        this.description = description;
-        this.profileImage = profileImage;
-        this.price = price;
-        this.productType = productType;
-    }
-
     // soft delete 메서드
     public void delete() {
         this.deletedAt = LocalDateTime.now();

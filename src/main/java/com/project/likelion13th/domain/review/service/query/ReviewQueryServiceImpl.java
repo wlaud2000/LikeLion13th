@@ -4,10 +4,14 @@ import com.project.likelion13th.domain.order.converter.OrderConverter;
 import com.project.likelion13th.domain.order.dto.response.OrderResDTO;
 import com.project.likelion13th.domain.order.entity.Order;
 import com.project.likelion13th.domain.product.entity.Product;
+import com.project.likelion13th.domain.product.exception.ProductErrorCode;
+import com.project.likelion13th.domain.product.exception.ProductException;
 import com.project.likelion13th.domain.product.repository.ProductRepository;
 import com.project.likelion13th.domain.review.converter.ReviewConverter;
 import com.project.likelion13th.domain.review.dto.response.ReviewResDTO;
 import com.project.likelion13th.domain.review.entity.Review;
+import com.project.likelion13th.domain.review.exception.ReviewErrorCode;
+import com.project.likelion13th.domain.review.exception.ReviewException;
 import com.project.likelion13th.domain.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -25,16 +29,16 @@ public class ReviewQueryServiceImpl implements ReviewQueryService {
     private final ProductRepository productRepository;
     @Override
     public ReviewResDTO.ReviewDetailDTO getReview(Long reviewId) {
-        Review review = reviewRepository.findById(reviewId).orElseThrow(
-                () -> new IllegalArgumentException("reviewId에 해당하는 리뷰가 없습니다."));   // TODO CustomError 처리
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
 
-        return ReviewConverter.from(review);
+        return ReviewConverter.toReviewDetailDTO(review);
     }
 
     @Override
     public ReviewResDTO.ReviewListDTO getReviewPage(Long productId, Long cursor, int size) {
-        Product product = productRepository.findById(productId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 productId입니다."));  // TODO CustomError 처리
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
         Pageable pageable = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "id"));
         Slice<Review> reviews;
@@ -46,7 +50,7 @@ public class ReviewQueryServiceImpl implements ReviewQueryService {
             reviews = reviewRepository.findByCursor(product, cursor, pageable);
         }
 
-        return ReviewConverter.from(reviews);
+        return ReviewConverter.toReviewListDTO(reviews);
     }
 
     @Override
@@ -63,7 +67,7 @@ public class ReviewQueryServiceImpl implements ReviewQueryService {
             reviews = reviewRepository.findByMemberIdAndCursor(memberId, cursor, pageable);
         }
 
-        return ReviewConverter.from(reviews);
+        return ReviewConverter.toReviewListDTO(reviews);
 
     }
 

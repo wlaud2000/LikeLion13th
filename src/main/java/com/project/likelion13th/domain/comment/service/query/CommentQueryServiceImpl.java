@@ -5,6 +5,8 @@ import com.project.likelion13th.domain.comment.dto.response.CommentResDTO;
 import com.project.likelion13th.domain.comment.repository.CommentLikeRepository;
 import com.project.likelion13th.domain.comment.repository.CommentRepository;
 import com.project.likelion13th.domain.review.entity.Review;
+import com.project.likelion13th.domain.review.exception.ReviewErrorCode;
+import com.project.likelion13th.domain.review.exception.ReviewException;
 import com.project.likelion13th.domain.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -24,8 +26,8 @@ public class CommentQueryServiceImpl implements CommentQueryService {
 
     @Override
     public CommentResDTO.CommentListDTO getCommentList(Long reviewId, Long cursor, int size) {
-        Review review = reviewRepository.findById(reviewId).orElseThrow(
-                () -> new IllegalArgumentException("reviewId에 해당하는 리뷰가 없습니다."));   // TODO CustomError 처리
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
 
         Pageable pageable = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "id"));
         Slice<Object[]> comments;
