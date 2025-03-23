@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Builder
@@ -34,4 +36,18 @@ public class Product extends BaseEntity {
     @Column(name = "product_type")
     @Enumerated(EnumType.STRING)
     private ProductType productType;
+
+    // soft delete를 위한 필드 추가
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    // soft delete 메서드
+    public void delete() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+    // 삭제 여부 확인 메서드
+    public boolean isDeleted() {
+        return deletedAt != null;
+    }
 }

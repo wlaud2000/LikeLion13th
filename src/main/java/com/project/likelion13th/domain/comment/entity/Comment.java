@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Builder
@@ -29,4 +31,23 @@ public class Comment extends BaseEntity {
 
     @OneToOne
     private Member member;
+
+    // soft delete를 위한 필드 추가
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    // content 수정을 위한 메서드
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    // soft delete를 위한 메서드
+    public void delete() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+    // 삭제 여부 확인 메서드
+    public boolean isDeleted() {
+        return deletedAt != null;
+    }
 }

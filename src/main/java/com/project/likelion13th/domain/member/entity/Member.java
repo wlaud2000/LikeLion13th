@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Builder
@@ -31,4 +33,28 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "social_type", nullable = false)
     private SocialType socialType;
+
+    // soft delete를 위한 필드 추가
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    // 회원 정보 수정 메서드
+    public void updateProfile(String nickname) {
+        this.nickname = nickname;
+    }
+
+    // 비밀번호 변경 메서드
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
+
+    // soft delete 메서드
+    public void delete() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+    // 삭제 여부 확인 메서드
+    public boolean isDeleted() {
+        return deletedAt != null;
+    }
 }

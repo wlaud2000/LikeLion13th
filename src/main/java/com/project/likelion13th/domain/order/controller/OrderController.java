@@ -4,6 +4,7 @@ import com.project.likelion13th.domain.order.dto.request.OrderReqDTO;
 import com.project.likelion13th.domain.order.dto.response.OrderResDTO;
 import com.project.likelion13th.domain.order.service.command.OrderCommandService;
 import com.project.likelion13th.domain.order.service.query.OrderQueryService;
+import com.project.likelion13th.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -28,20 +29,11 @@ public class OrderController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "주문 추가 성공", content = @Content(schema = @Schema(implementation = OrderResDTO.OrderDetailDTO.class)))
     })
-    public ResponseEntity<OrderResDTO.OrderDetailDTO> createOrder(@RequestBody OrderReqDTO.CreateOrderDTO request) {
+    public CustomResponse<OrderResDTO.OrderDetailDTO> createOrder(@RequestBody OrderReqDTO.CreateOrderDTO request) {
 
         OrderResDTO.OrderDetailDTO response = orderCommandService.createOrder(request);
 
-        return ResponseEntity.ok(response);
-    }
-
-    @DeleteMapping("/{orderId}")
-    @Operation(summary = "주문 취소", description = "주문을 취소합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "주문 취소 성공")
-    })
-    public ResponseEntity<Void> cancelOrder(@PathVariable Long orderId) {
-        return ResponseEntity.ok(null);
+        return CustomResponse.onSuccess(response);
     }
 
     @GetMapping("/me")
@@ -49,11 +41,33 @@ public class OrderController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "내 주문 조회 성공", content = @Content(schema = @Schema(implementation = OrderResDTO.OrderListDTO.class)))
     })
-    public ResponseEntity<OrderResDTO.OrderListDTO> getMyOrders(
+    public CustomResponse<OrderResDTO.OrderListDTO> getMyOrders(
             @RequestParam Long cursor,
             @RequestParam Integer size
     ) {
         OrderResDTO.OrderListDTO response = orderQueryService.getMyOrder(cursor, size);
-        return ResponseEntity.ok(response);
+        return CustomResponse.onSuccess(response);
+    }
+
+    @PatchMapping("/{orderId}/status")
+    @Operation(summary = "주문 상태 변경", description = "주문의 상태를 변경합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "주문 상태 변경 성공", content = @Content(schema = @Schema(implementation = OrderResDTO.OrderDetailDTO.class)))
+    })
+    public CustomResponse<OrderResDTO.OrderDetailDTO> updateOrderStatus(
+            @PathVariable Long orderId,
+            @RequestBody OrderReqDTO.UpdateOrderStatusDTO request) {
+        OrderResDTO.OrderDetailDTO response = orderCommandService.updateOrderStatus(orderId, request);
+        return CustomResponse.onSuccess(response);
+    }
+
+    @DeleteMapping("/{orderId}")
+    @Operation(summary = "주문 취소", description = "주문을 취소합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "주문 취소 성공")
+    })
+    public CustomResponse<String> cancelOrder(@PathVariable Long orderId) {
+        orderCommandService.cancelOrder(orderId);
+        return CustomResponse.onSuccess("주문 취소 성공");
     }
 }

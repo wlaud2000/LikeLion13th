@@ -12,7 +12,7 @@ import org.springframework.data.domain.Slice;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ReviewConverter {
 
-    public static Review toEntity(Member member, Product product, ReviewReqDTO.CreateReviewDTO dto){
+    public static Review toReview(Member member, Product product, ReviewReqDTO.CreateReviewDTO dto){
         return Review.builder()
                 .content(dto.getContent())
                 .rating(dto.getRating())
@@ -21,7 +21,7 @@ public class ReviewConverter {
                 .build();
     }
 
-    public static ReviewResDTO.ReviewDetailDTO from(Review review){
+    public static ReviewResDTO.ReviewDetailDTO toReviewDetailDTO(Review review){
         return ReviewResDTO.ReviewDetailDTO.builder()
                 .reviewId(review.getId())
                 .productId(review.getProduct().getId())
@@ -31,9 +31,9 @@ public class ReviewConverter {
                 .build();
     }
 
-    public static ReviewResDTO.ReviewListDTO from(Slice<Review> reviews){
+    public static ReviewResDTO.ReviewListDTO toReviewListDTO(Slice<Review> reviews){
         return ReviewResDTO.ReviewListDTO.builder()
-                .reviews(reviews.stream().map(ReviewConverter::from).toList())
+                .reviews(reviews.stream().map(ReviewConverter::toReviewDetailDTO).toList())
                 .hasNext(reviews.hasNext())
                 .nextCursor(reviews.isEmpty() ?
                         0L :

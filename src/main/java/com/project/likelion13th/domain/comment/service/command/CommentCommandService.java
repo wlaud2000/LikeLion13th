@@ -5,6 +5,7 @@ import com.project.likelion13th.domain.comment.dto.response.CommentResDTO;
 
 public interface CommentCommandService {
     CommentResDTO.CommentDetailDTO createComment(Long reviewId, CommentReqDTO.CreateCommentDTO dto);
-    void commentLike(Long commentId);
-
+    CommentResDTO.CommentDetailDTO updateComment(Long commentId, CommentReqDTO.UpdateCommentDTO dto);
+    void deleteComment(Long commentId);
+    CommentResDTO.LikeResultDTO commentLike(Long commentId);
 }

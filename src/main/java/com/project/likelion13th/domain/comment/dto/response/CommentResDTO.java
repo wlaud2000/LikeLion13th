@@ -45,4 +45,19 @@ public class CommentResDTO {
         @Schema(description = "좋아요 수", example = "12")
         private Long likeCount;
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class LikeResultDTO {
+        @Schema(description = "댓글 ID", example = "789")
+        private Long commentId;
+
+        @Schema(description = "좋아요 상태", example = "true")
+        private Boolean isLiked;
+
+        @Schema(description = "좋아요 수", example = "42")
+        private Long likeCount;
+    }
 }

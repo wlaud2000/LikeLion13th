@@ -33,6 +33,6 @@ public class OrderQueryServiceImpl implements OrderQueryService {
             orders = orderRepository.findByMemberIdAndCursor(memberId, cursor, pageable);
         }
 
-        return OrderConverter.from(orders);
+        return OrderConverter.toOrderListDTO(orders);
     }
 }

@@ -7,6 +7,5 @@ import org.springframework.data.domain.Slice;
 
 public interface ProductCommandService {
     ProductResDTO.ProductDetailDTO createProduct(ProductReqDTO.CreateProductDTO dto);
-
-
+    void deleteProduct(Long productId);
 }

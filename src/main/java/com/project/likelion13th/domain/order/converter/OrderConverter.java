@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrderConverter {
 
-    public static OrderResDTO.OrderDetailDTO from(Order order, OrderProduct orderProduct) {
+    public static OrderResDTO.OrderDetailDTO toOrderDetailDTO(Order order, OrderProduct orderProduct) {
         Product product = orderProduct.getProduct();
         Double totalPrice = product.getPrice() * orderProduct.getQuantity();
 
@@ -31,10 +31,10 @@ public class OrderConverter {
                 .build();
     }
 
-    public static OrderResDTO.OrderListDTO from(Slice<Order> orders) {
+    public static OrderResDTO.OrderListDTO toOrderListDTO(Slice<Order> orders) {
         List<OrderResDTO.OrderDetailDTO> orderDetailDTOs = orders.getContent().stream()
                 .flatMap(order -> order.getOrderProducts().stream()
-                        .map(orderProduct -> from(order, orderProduct)))
+                        .map(orderProduct -> toOrderDetailDTO(order, orderProduct)))
                 .toList();
 
         return new OrderResDTO.OrderListDTO(
@@ -44,7 +44,7 @@ public class OrderConverter {
         );
     }
 
-    public static Order toEntity(Member member){
+    public static Order toOrder(Member member){
         return Order.builder()
                 .member(member)
                 .orderStatus(OrderStatus.PROCESS)
@@ -52,7 +52,7 @@ public class OrderConverter {
                 .build();
     }
 
-    public static OrderProduct toEntity(Order order, Product product, int quantity){
+    public static OrderProduct toOrderProduct(Order order, Product product, int quantity){
         return OrderProduct.builder()
                 .order(order)
                 .product(product)

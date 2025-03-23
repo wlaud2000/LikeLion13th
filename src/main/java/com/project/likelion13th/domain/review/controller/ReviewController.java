@@ -4,6 +4,7 @@ import com.project.likelion13th.domain.review.dto.request.ReviewReqDTO;
 import com.project.likelion13th.domain.review.dto.response.ReviewResDTO;
 import com.project.likelion13th.domain.review.service.command.ReviewCommandService;
 import com.project.likelion13th.domain.review.service.query.ReviewQueryService;
+import com.project.likelion13th.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Tag(name = "Review API", description = "리뷰 관련 API")
 public class ReviewController {
+
     private final ReviewQueryService reviewQueryService;
     private final ReviewCommandService reviewCommandService;
 
@@ -27,13 +29,13 @@ public class ReviewController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "리뷰 목록 조회 성공", content = @Content(schema = @Schema(implementation = ReviewResDTO.ReviewListDTO.class)))
     })
-    public ResponseEntity<ReviewResDTO.ReviewListDTO> getReviews(
+    public CustomResponse<ReviewResDTO.ReviewListDTO> getReviews(
             @PathVariable Long productId,
             @RequestParam Integer size,
             @RequestParam Long cursor
     ) {
         reviewQueryService.getReviewPage(productId, cursor, size);
-        return ResponseEntity.ok(null);
+        return CustomResponse.onSuccess(null);
     }
 
     @GetMapping("/reviews/{reviewId}")
@@ -41,9 +43,9 @@ public class ReviewController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "리뷰 상세 조회 성공", content = @Content(schema = @Schema(implementation = ReviewResDTO.ReviewDetailDTO.class)))
     })
-    public ResponseEntity<ReviewResDTO.ReviewDetailDTO> getReview(@PathVariable Long reviewId) {
+    public CustomResponse<ReviewResDTO.ReviewDetailDTO> getReview(@PathVariable Long reviewId) {
         ReviewResDTO.ReviewDetailDTO response = reviewQueryService.getReview(reviewId);
-        return ResponseEntity.ok(response);
+        return CustomResponse.onSuccess(response);
     }
 
     @PostMapping("/products/{productId}/reviews")
@@ -51,9 +53,9 @@ public class ReviewController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "리뷰 작성 성공", content = @Content(schema = @Schema(implementation = ReviewResDTO.ReviewDetailDTO.class)))
     })
-    public ResponseEntity<ReviewResDTO.ReviewDetailDTO> createReview(@PathVariable Long productId, @RequestBody ReviewReqDTO.CreateReviewDTO createReviewDTO) {
+    public CustomResponse<ReviewResDTO.ReviewDetailDTO> createReview(@PathVariable Long productId, @RequestBody ReviewReqDTO.CreateReviewDTO createReviewDTO) {
         ReviewResDTO.ReviewDetailDTO response = reviewCommandService.createReview(productId, createReviewDTO);
-        return ResponseEntity.ok(response);
+        return CustomResponse.onSuccess(response);
     }
 
     @PatchMapping("/reviews/{reviewId}")
@@ -61,8 +63,9 @@ public class ReviewController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "리뷰 수정 성공", content = @Content(schema = @Schema(implementation = ReviewResDTO.ReviewDetailDTO.class)))
     })
-    public ResponseEntity<ReviewResDTO.ReviewDetailDTO> updateReview(@PathVariable Long reviewId, @RequestBody ReviewReqDTO.UpdateReviewDTO updateReviewDTO) {
-        return ResponseEntity.ok(null);
+    public CustomResponse<ReviewResDTO.ReviewDetailDTO> updateReview(@PathVariable Long reviewId, @RequestBody ReviewReqDTO.UpdateReviewDTO updateReviewDTO) {
+        ReviewResDTO.ReviewDetailDTO response = reviewCommandService.updateReview(reviewId, updateReviewDTO);
+        return CustomResponse.onSuccess(response);
     }
 
     @DeleteMapping("/reviews/{reviewId}")
@@ -70,8 +73,9 @@ public class ReviewController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "리뷰 삭제 성공")
     })
-    public ResponseEntity<Void> deleteReview(@PathVariable Long reviewId) {
-        return ResponseEntity.ok(null);
+    public CustomResponse<String> deleteReview(@PathVariable Long reviewId) {
+        reviewCommandService.deleteReview(reviewId);
+        return CustomResponse.onSuccess("리뷰 삭제 성공");
     }
 
     @GetMapping("/reviews/me")
@@ -79,10 +83,10 @@ public class ReviewController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "내 리뷰 조회 성공", content = @Content(schema = @Schema(implementation = ReviewResDTO.ReviewListDTO.class)))
     })
-    public ResponseEntity<ReviewResDTO.ReviewListDTO> getMyReviews(
+    public CustomResponse<ReviewResDTO.ReviewListDTO> getMyReviews(
             @RequestParam Integer size,
             @RequestParam Long cursor) {
         ReviewResDTO.ReviewListDTO response = reviewQueryService.getMyReview(cursor, size);
-        return ResponseEntity.ok(response);
+        return CustomResponse.onSuccess(response);
     }
 }

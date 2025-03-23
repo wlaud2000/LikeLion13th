@@ -4,6 +4,7 @@ import com.project.likelion13th.domain.comment.dto.request.CommentReqDTO;
 import com.project.likelion13th.domain.comment.dto.response.CommentResDTO;
 import com.project.likelion13th.domain.comment.service.command.CommentCommandService;
 import com.project.likelion13th.domain.comment.service.query.CommentQueryService;
+import com.project.likelion13th.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,7 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,13 +28,13 @@ public class CommentController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "댓글 목록 조회 성공", content = @Content(schema = @Schema(implementation = CommentResDTO.CommentListDTO.class)))
     })
-    public ResponseEntity<CommentResDTO.CommentListDTO> getComments(
+    public CustomResponse<CommentResDTO.CommentListDTO> getComments(
             @PathVariable Long reviewId,
             @RequestParam Long cursor,
             @RequestParam Integer size
     ) {
         CommentResDTO.CommentListDTO response = commentQueryService.getCommentList(reviewId, cursor, size);
-        return ResponseEntity.ok(response);
+        return CustomResponse.onSuccess(response);
     }
 
     @PostMapping("/reviews/{reviewId}/comments")
@@ -41,10 +42,10 @@ public class CommentController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "댓글 작성 성공", content = @Content(schema = @Schema(implementation = CommentResDTO.CommentDetailDTO.class)))
     })
-    public ResponseEntity<CommentResDTO.CommentDetailDTO> createComment(@PathVariable Long reviewId, @RequestBody CommentReqDTO.CreateCommentDTO request) {
+    public CustomResponse<CommentResDTO.CommentDetailDTO> createComment(@PathVariable Long reviewId, @RequestBody CommentReqDTO.CreateCommentDTO request) {
 
         CommentResDTO.CommentDetailDTO response = commentCommandService.createComment(reviewId, request);
-        return ResponseEntity.ok(response);
+        return CustomResponse.onSuccess(HttpStatus.CREATED, response);
     }
 
     @PatchMapping("/comments/{commentId}")
@@ -52,8 +53,9 @@ public class CommentController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "댓글 수정 성공", content = @Content(schema = @Schema(implementation = CommentResDTO.CommentDetailDTO.class)))
     })
-    public ResponseEntity<CommentResDTO.CommentDetailDTO> updateComment(@PathVariable Long commentId, @RequestBody CommentReqDTO.UpdateCommentDTO request) {
-        return ResponseEntity.ok(null);
+    public CustomResponse<CommentResDTO.CommentDetailDTO> updateComment(@PathVariable Long commentId, @RequestBody CommentReqDTO.UpdateCommentDTO request) {
+        CommentResDTO.CommentDetailDTO response = commentCommandService.updateComment(commentId, request);
+        return CustomResponse.onSuccess(response);
     }
 
     @DeleteMapping("/comments/{commentId}")
@@ -61,16 +63,18 @@ public class CommentController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "댓글 삭제 성공")
     })
-    public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
-        return ResponseEntity.ok(null);
+    public CustomResponse<String> deleteComment(@PathVariable Long commentId) {
+        commentCommandService.deleteComment(commentId);
+        return CustomResponse.onSuccess("댓글 삭제 성공");
     }
 
     @PostMapping("/comments/{commentId}/like")
-    @Operation(summary = "댓글 좋아요", description = "특정 댓글에 좋아요를 추가합니다.")
+    @Operation(summary = "댓글 좋아요", description = "특정 댓글에 좋아요를 추가/취소합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "댓글 좋아요 성공")
+            @ApiResponse(responseCode = "200", description = "댓글 좋아요 성공", content = @Content(schema = @Schema(implementation = CommentResDTO.LikeResultDTO.class)))
     })
-    public ResponseEntity<String> likeComment(@PathVariable Long commentId) {
-        return ResponseEntity.ok("좋아요 성공");
+    public CustomResponse<CommentResDTO.LikeResultDTO> likeComment(@PathVariable Long commentId) {
+        CommentResDTO.LikeResultDTO likeCount = commentCommandService.commentLike(commentId);
+        return CustomResponse.onSuccess(likeCount);
     }
 }
