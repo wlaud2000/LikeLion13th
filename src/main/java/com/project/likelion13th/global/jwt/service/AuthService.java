@@ -2,6 +2,8 @@ package com.project.likelion13th.global.jwt.service;
 
 import com.project.likelion13th.global.jwt.dto.JwtDTO;
 import com.project.likelion13th.global.jwt.entity.Token;
+import com.project.likelion13th.global.jwt.exception.AuthErrorCode;
+import com.project.likelion13th.global.jwt.exception.AuthException;
 import com.project.likelion13th.global.jwt.repository.TokenRepository;
 import com.project.likelion13th.global.jwt.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +30,7 @@ public class AuthService {
 
         //Access Token 에서의 Email 로 부터 DB 에 저장된 Refresh Token 가져오기
         Token refreshTokenByDB = tokenRepository.findByEmail(email).orElseThrow(
-                () -> new SecurityException("access token 의 Email 로부터 Refresh Token 을 찾을 수 없습니다.")
+                () -> new AuthException(AuthErrorCode.INVALID_TOKEN)
         );
 
         //Refresh Token 이 유효한지 검사
@@ -41,7 +43,7 @@ public class AuthService {
             log.info("[ Auth Service ] 토큰을 재발급합니다.");
             return jwtUtil.reissueToken(refreshToken);
         } else {
-            throw new SecurityException("Refresh Token 이 일치하지 않습니다.");
+            throw new AuthException(AuthErrorCode.INVALID_TOKEN);
         }
     }
 }

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.likelion13th.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion13th.global.apiPayload.CustomResponse;
 import com.project.likelion13th.global.jwt.dto.JwtDTO;
+import com.project.likelion13th.global.jwt.exception.AuthErrorCode;
+import com.project.likelion13th.global.jwt.exception.AuthException;
 import com.project.likelion13th.global.jwt.userDetails.CustomUserDetails;
 import com.project.likelion13th.global.jwt.util.JwtUtil;
 import jakarta.servlet.FilterChain;
@@ -41,7 +43,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         try {
             requestBody = objectMapper.readValue(request.getInputStream(), MemberReqDTO.LoginDTO.class);
         } catch (IOException e) {
-            throw new AuthenticationServiceException("[ Login Filter ] Request Body 파싱 과정에서 오류가 발생했습니다.");
+            throw new AuthException(AuthErrorCode._NOT_FOUND);
         }
 
         //Request Body 에서 추출

@@ -1,6 +1,8 @@
 package com.project.likelion13th.global.jwt.userDetails;
 
 import com.project.likelion13th.domain.member.entity.Member;
+import com.project.likelion13th.domain.member.exception.MemberErrorCode;
+import com.project.likelion13th.domain.member.exception.MemberException;
 import com.project.likelion13th.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,6 @@ public class CustomUserDetailsService implements UserDetailsService {
             Member member = memberEntity.get();
             return new CustomUserDetails(member.getEmail(),member.getPassword(), member.getRole().name());
         }
-        throw new UsernameNotFoundException("사용자가 존재하지 않습니다.");
+        throw new MemberException(MemberErrorCode.MEMBER_NOT_FOUND);
     }
 }

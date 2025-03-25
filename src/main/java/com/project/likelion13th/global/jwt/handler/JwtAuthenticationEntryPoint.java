@@ -4,7 +4,7 @@ package com.project.likelion13th.global.jwt.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.likelion13th.global.apiPayload.CustomResponse;
-import com.project.likelion13th.global.jwt.exception.JwtErrorCode;
+import com.project.likelion13th.global.jwt.exception.AuthErrorCode;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,8 +20,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setContentType("application/json; charset=UTF-8");
         response.setStatus(401);
         CustomResponse<Object> errorResponse = CustomResponse.onFailure(
-                JwtErrorCode._UNAUTHORIZED.getCode(),
-                JwtErrorCode._UNAUTHORIZED.getMessage(),
+                AuthErrorCode._UNAUTHORIZED.getCode(),
+                AuthErrorCode._UNAUTHORIZED.getMessage(),
                 null
         );
         ObjectMapper mapper = new ObjectMapper();
