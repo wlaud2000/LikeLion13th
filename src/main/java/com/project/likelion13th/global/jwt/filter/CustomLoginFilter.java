@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.likelion13th.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion13th.global.apiPayload.CustomResponse;
 import com.project.likelion13th.global.jwt.dto.JwtDTO;
-import com.project.likelion13th.global.jwt.dto.LoginRequestDTO;
 import com.project.likelion13th.global.jwt.userDetails.CustomUserDetails;
 import com.project.likelion13th.global.jwt.util.JwtUtil;
 import jakarta.servlet.FilterChain;
