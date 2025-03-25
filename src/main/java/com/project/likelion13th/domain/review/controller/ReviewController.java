@@ -32,8 +32,8 @@ public class ReviewController {
             @RequestParam Integer size,
             @RequestParam Long cursor
     ) {
-        reviewQueryService.getReviewPage(productId, cursor, size);
-        return ResponseEntity.ok(null);
+        ReviewResDTO.ReviewListDTO response = reviewQueryService.getReviewPage(productId, cursor, size);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/reviews/{reviewId}")
