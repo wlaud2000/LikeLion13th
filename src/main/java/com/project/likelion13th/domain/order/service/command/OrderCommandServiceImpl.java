@@ -37,18 +37,16 @@ public class OrderCommandServiceImpl implements OrderCommandService {
     private final OrderProductRepository orderProductRepository;
 
     @Override
-    public OrderResDTO.OrderDetailDTO createOrder(OrderReqDTO.CreateOrderDTO dto) {
-        // 임시로 Member 설정 (실제로는 인증된 사용자 정보를 사용)
-        Member member = memberRepository.findById(1L)
+    public OrderResDTO.OrderDetailDTO createOrder(String email, OrderReqDTO.CreateOrderDTO dto) {
+        // 로그인한 Member 조회
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         // Product 조회
         Product product = productRepository.findById(dto.getProductId())
                 .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
-        List<OrderReqDTO> orderProductDtos = new ArrayList<>();
-
-        // 기존 주문 조회 (주문 상태가 PENDING인 주문)
+        // 기존 주문 조회 (주문 상태가 PROCESS인 주문)
         Optional<Order> newOrder = orderRepository.findByMemberAndOrderStatusAndNotDeleted(member, OrderStatus.PROCESS);
         Order order;
         order = newOrder.orElseGet(() -> OrderConverter.toOrder(member));
@@ -65,9 +63,9 @@ public class OrderCommandServiceImpl implements OrderCommandService {
     }
 
     @Override
-    public OrderResDTO.OrderDetailDTO updateOrderStatus(Long orderId, OrderReqDTO.UpdateOrderStatusDTO dto) {
-        // 임시로 Member 설정 (실제로는 인증된 사용자 정보를 사용)
-        Member member = memberRepository.findById(1L)
+    public OrderResDTO.OrderDetailDTO updateOrderStatus(String email, Long orderId, OrderReqDTO.UpdateOrderStatusDTO dto) {
+        // 로그인한 Member 조회
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         // 주문 조회
@@ -104,9 +102,9 @@ public class OrderCommandServiceImpl implements OrderCommandService {
     }
 
     @Override
-    public void cancelOrder(Long orderId) {
+    public void cancelOrder(String email, Long orderId) {
         // 임시로 Member 설정 (실제로는 인증된 사용자 정보를 사용)
-        Member member = memberRepository.findById(1L)
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         // 주문 조회

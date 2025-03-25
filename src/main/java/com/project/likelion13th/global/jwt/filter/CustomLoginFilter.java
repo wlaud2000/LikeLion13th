@@ -1,6 +1,8 @@
 package com.project.likelion13th.global.jwt.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.likelion13th.domain.member.dto.request.MemberReqDTO;
+import com.project.likelion13th.global.apiPayload.CustomResponse;
 import com.project.likelion13th.global.jwt.dto.JwtDTO;
 import com.project.likelion13th.global.jwt.dto.LoginRequestDTO;
 import com.project.likelion13th.global.jwt.userDetails.CustomUserDetails;
@@ -36,9 +38,9 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         log.info("[ Login Filter ]  로그인 시도 : Custom Login Filter 작동 ");
         ObjectMapper objectMapper = new ObjectMapper();
-        LoginRequestDTO requestBody;
+        MemberReqDTO.LoginDTO requestBody;
         try {
-            requestBody = objectMapper.readValue(request.getInputStream(), LoginRequestDTO.class);
+            requestBody = objectMapper.readValue(request.getInputStream(), MemberReqDTO.LoginDTO.class);
         } catch (IOException e) {
             throw new AuthenticationServiceException("[ Login Filter ] Request Body 파싱 과정에서 오류가 발생했습니다.");
         }
@@ -52,6 +54,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         //UserNamePasswordToken 생성 (인증용 객체)
         UsernamePasswordAuthenticationToken authToken
                 = new UsernamePasswordAuthenticationToken(email, password, null);
+
 
         log.info("[ Login Filter ] 인증용 객체 UsernamePasswordAuthenticationToken 이 생성되었습니다. ");
         log.info("[ Login Filter ] 인증을 시도합니다.");
@@ -80,16 +83,18 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
                 .refreshToken(jwtUtil.createJwtRefreshToken(customUserDetails)) //refresh token 생성
                 .build();
 
+        // CustomResponse 사용하여 응답 통일
+        CustomResponse<JwtDTO> responseBody = CustomResponse.onSuccess(jwtDto);
+
+        //JSON 변환
         ObjectMapper objectMapper = new ObjectMapper();
         response.setStatus(HttpStatus.OK.value()); //Response 의 Status 를 200으로 설정
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
 
         //Body 에 토큰이 담긴 Response 쓰기
-        response.getWriter().write(objectMapper.writeValueAsString(jwtDto));
+        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
     }
-
-    //로그인 실패시
     @Override
     protected void unsuccessfulAuthentication(
             @NonNull HttpServletRequest request,
@@ -98,26 +103,36 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         log.info("[ Login Filter ] 로그인에 실패하였습니다.");
 
+        String errorCode;
         String errorMessage;
+
         if (failed instanceof BadCredentialsException) {
+            errorCode = String.valueOf(HttpStatus.UNAUTHORIZED.value());
             errorMessage = "잘못된 정보입니다.";
         } else if (failed instanceof LockedException) {
+            errorCode = String.valueOf(HttpStatus.LOCKED.value());
             errorMessage = "계정이 잠금 상태입니다.";
         } else if (failed instanceof DisabledException) {
+            errorCode = String.valueOf(HttpStatus.FORBIDDEN.value());
             errorMessage = "계정이 비활성화 되었습니다.";
         } else if (failed instanceof UsernameNotFoundException) {
+            errorCode = String.valueOf(HttpStatus.NOT_FOUND.value());
             errorMessage = "계정을 찾을 수 없습니다.";
         } else if (failed instanceof AuthenticationServiceException) {
+            errorCode = String.valueOf(HttpStatus.BAD_REQUEST.value());
             errorMessage = "Request Body 파싱 중 오류가 발생했습니다.";
         } else {
+            errorCode = String.valueOf(HttpStatus.UNAUTHORIZED.value());
             errorMessage = "인증에 실패했습니다.";
         }
 
+        // CustomResponse 사용하여 응답 통일
+        CustomResponse<Void> responseBody = CustomResponse.onFailure(errorCode, errorMessage);
+
         ObjectMapper objectMapper = new ObjectMapper();
-        response.setStatus(HttpStatus.UNAUTHORIZED.value()); //Status 설정
+        response.setStatus(Integer.parseInt(errorCode)); // HTTP 상태 코드 설정
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(errorMessage)); //error message 와 함께 Response 작성
+        response.getWriter().write(objectMapper.writeValueAsString(responseBody)); // 응답 변환 및 출력
     }
-
 }

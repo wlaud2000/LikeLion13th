@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -42,9 +44,11 @@ public class CommentController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "댓글 작성 성공", content = @Content(schema = @Schema(implementation = CommentResDTO.CommentDetailDTO.class)))
     })
-    public CustomResponse<CommentResDTO.CommentDetailDTO> createComment(@PathVariable Long reviewId, @RequestBody CommentReqDTO.CreateCommentDTO request) {
+    public CustomResponse<CommentResDTO.CommentDetailDTO> createComment(@PathVariable Long reviewId,
+                                                                        @RequestBody CommentReqDTO.CreateCommentDTO request,
+                                                                        @AuthenticationPrincipal UserDetails userDetails) {
 
-        CommentResDTO.CommentDetailDTO response = commentCommandService.createComment(reviewId, request);
+        CommentResDTO.CommentDetailDTO response = commentCommandService.createComment(userDetails.getUsername(), reviewId, request);
         return CustomResponse.onSuccess(HttpStatus.CREATED, response);
     }
 
@@ -53,8 +57,10 @@ public class CommentController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "댓글 수정 성공", content = @Content(schema = @Schema(implementation = CommentResDTO.CommentDetailDTO.class)))
     })
-    public CustomResponse<CommentResDTO.CommentDetailDTO> updateComment(@PathVariable Long commentId, @RequestBody CommentReqDTO.UpdateCommentDTO request) {
-        CommentResDTO.CommentDetailDTO response = commentCommandService.updateComment(commentId, request);
+    public CustomResponse<CommentResDTO.CommentDetailDTO> updateComment(@PathVariable Long commentId,
+                                                                        @RequestBody CommentReqDTO.UpdateCommentDTO request,
+                                                                        @AuthenticationPrincipal UserDetails userDetails) {
+        CommentResDTO.CommentDetailDTO response = commentCommandService.updateComment(userDetails.getUsername(), commentId, request);
         return CustomResponse.onSuccess(response);
     }
 
@@ -63,8 +69,9 @@ public class CommentController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "댓글 삭제 성공")
     })
-    public CustomResponse<String> deleteComment(@PathVariable Long commentId) {
-        commentCommandService.deleteComment(commentId);
+    public CustomResponse<String> deleteComment(@PathVariable Long commentId,
+                                                @AuthenticationPrincipal UserDetails userDetails) {
+        commentCommandService.deleteComment(userDetails.getUsername(), commentId);
         return CustomResponse.onSuccess("댓글 삭제 성공");
     }
 
@@ -73,8 +80,9 @@ public class CommentController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "댓글 좋아요 성공", content = @Content(schema = @Schema(implementation = CommentResDTO.LikeResultDTO.class)))
     })
-    public CustomResponse<CommentResDTO.LikeResultDTO> likeComment(@PathVariable Long commentId) {
-        CommentResDTO.LikeResultDTO likeCount = commentCommandService.commentLike(commentId);
+    public CustomResponse<CommentResDTO.LikeResultDTO> likeComment(@PathVariable Long commentId,
+                                                                   @AuthenticationPrincipal UserDetails userDetails) {
+        CommentResDTO.LikeResultDTO likeCount = commentCommandService.commentLike(userDetails.getUsername(), commentId);
         return CustomResponse.onSuccess(likeCount);
     }
 }

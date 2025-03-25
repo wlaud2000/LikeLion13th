@@ -3,19 +3,23 @@ package com.project.likelion13th.domain.member.converter;
 import com.project.likelion13th.domain.member.dto.request.MemberReqDTO;
 import com.project.likelion13th.domain.member.dto.response.MemberResDTO;
 import com.project.likelion13th.domain.member.entity.Member;
+import com.project.likelion13th.domain.member.entity.Role;
 import com.project.likelion13th.domain.member.entity.SocialType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberConverter {
 
-    public static Member toMember(MemberReqDTO.RegisterDTO dto){
+    public static Member toMember(PasswordEncoder passwordEncoder, MemberReqDTO.RegisterDTO dto){
+        String password = passwordEncoder.encode(dto.getPassword());
         return Member.builder()
                 .nickname(dto.getName())
                 .email(dto.getEmail())
-                .password(dto.getPassword()) // 실제 구현에서는 암호화 필요
+                .password(password)
                 .socialType(SocialType.LOCAL)
+                .role(Role.USER)
                 .build();
     }
 

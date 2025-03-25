@@ -8,6 +8,7 @@ import com.project.likelion13th.domain.member.exception.MemberErrorCode;
 import com.project.likelion13th.domain.member.exception.MemberException;
 import com.project.likelion13th.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,19 +16,20 @@ import org.springframework.stereotype.Service;
 public class MemberCommandServiceImpl implements MemberCommandService {
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public MemberResDTO createMember(MemberReqDTO.RegisterDTO dto) {
-        Member member = MemberConverter.toMember(dto);
+        Member member = MemberConverter.toMember(passwordEncoder, dto);
         memberRepository.save(member);
 
         return MemberConverter.toMemberResponseDTO(member);
     }
 
     @Override
-    public MemberResDTO updateProfile(Long memberId, MemberReqDTO.UpdateProfileDTO dto) {
+    public MemberResDTO updateProfile(String email, MemberReqDTO.UpdateProfileDTO dto) {
         // 회원 정보 조회
-        Member member = memberRepository.findByIdAndNotDeleted(memberId)
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         // 프로필 업데이트
@@ -37,9 +39,9 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     }
 
     @Override
-    public void updatePassword(Long memberId, MemberReqDTO.PasswordResetDTO dto) {
+    public void updatePassword(String email, MemberReqDTO.PasswordResetDTO dto) {
         // 회원 정보 조회
-        Member member = memberRepository.findByIdAndNotDeleted(memberId)
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         // 실제 구현에서는 비밀번호 암호화 로직 필요
@@ -47,9 +49,9 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     }
 
     @Override
-    public void deleteMember(Long memberId) {
+    public void deleteMember(String email) {
         // 회원 정보 조회
-        Member member = memberRepository.findByIdAndNotDeleted(memberId)
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         // soft delete 처리
