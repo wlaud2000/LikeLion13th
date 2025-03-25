@@ -1,5 +1,6 @@
 package com.project.likelion13th.global.jwt.controller;
 
+import com.project.likelion13th.global.apiPayload.CustomResponse;
 import com.project.likelion13th.global.jwt.dto.JwtDTO;
 import com.project.likelion13th.global.jwt.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,10 +25,10 @@ public class AuthController {
     //토큰 재발급 API
     @Operation(method = "POST", summary = "토큰 재발급", description = "토큰 재발급. accessToken과 refreshToken을 body에 담아서 전송합니다.")
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissue(@RequestBody JwtDTO jwtDto) {
+    public CustomResponse<?> reissue(@RequestBody JwtDTO jwtDto) {
 
         log.info("[ Auth Controller ] 토큰을 재발급합니다. ");
 
-        return ResponseEntity.ok(authService.reissueToken(jwtDto));
+        return CustomResponse.onSuccess(authService.reissueToken(jwtDto));
     }
 }
