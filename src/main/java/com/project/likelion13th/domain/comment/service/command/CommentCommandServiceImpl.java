@@ -36,9 +36,9 @@ public class CommentCommandServiceImpl implements CommentCommandService{
     private final MemberRepository memberRepository;
 
     @Override
-    public CommentResDTO.CommentDetailDTO createComment(Long reviewId, CommentReqDTO.CreateCommentDTO dto) {
-        // 임시로 Member 설정 (실제로는 인증된 사용자 정보를 사용)
-        Member member = memberRepository.findById(1L)
+    public CommentResDTO.CommentDetailDTO createComment(String email, Long reviewId, CommentReqDTO.CreateCommentDTO dto) {
+        // 로그인한 Member 조회
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Review review = reviewRepository.findById(reviewId)
@@ -51,9 +51,9 @@ public class CommentCommandServiceImpl implements CommentCommandService{
     }
 
     @Override
-    public CommentResDTO.CommentDetailDTO updateComment(Long commentId, CommentReqDTO.UpdateCommentDTO dto) {
-        // 임시로 Member 설정 (실제로는 인증된 사용자 정보를 사용)
-        Member member = memberRepository.findById(1L)
+    public CommentResDTO.CommentDetailDTO updateComment(String email, Long commentId, CommentReqDTO.UpdateCommentDTO dto) {
+        // 로그인한 Member 조회
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Comment comment = commentRepository.findById(commentId)
@@ -79,9 +79,9 @@ public class CommentCommandServiceImpl implements CommentCommandService{
     }
 
     @Override
-    public void deleteComment(Long commentId) {
-        // 임시로 Member 설정 (실제로는 인증된 사용자 정보를 사용)
-        Member member = memberRepository.findById(1L)
+    public void deleteComment(String email, Long commentId) {
+        // 로그인한 Member 조회
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Comment comment = commentRepository.findById(commentId)
@@ -108,9 +108,9 @@ public class CommentCommandServiceImpl implements CommentCommandService{
     }
 
     @Override
-    public CommentResDTO.LikeResultDTO commentLike(Long commentId) {
+    public CommentResDTO.LikeResultDTO commentLike(String email, Long commentId) {
         // 임시로 Member 설정 (실제로는 인증된 사용자 정보를 사용)
-        Member member = memberRepository.findById(1L)
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Comment comment = commentRepository.findById(commentId)

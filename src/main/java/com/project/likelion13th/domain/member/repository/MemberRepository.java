@@ -23,4 +23,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     // 특정 날짜 이전에 소프트 딜리트된 회원 목록 조회
     @Query("SELECT m FROM Member m WHERE m.deletedAt IS NOT NULL AND m.deletedAt <= :date")
     List<Member> findDeletedMembersBefore(@Param("date") LocalDateTime date);
+
+    Optional<Member> findByEmail(String email);
 }

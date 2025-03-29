@@ -28,9 +28,9 @@ public class ReviewCommandServiceImpl implements ReviewCommandService{
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
     @Override
-    public ReviewResDTO.ReviewDetailDTO createReview(Long productId, ReviewReqDTO.CreateReviewDTO dto) {
-        // 임시로 Member 설정 (실제로는 인증된 사용자 정보를 사용)
-        Member member = memberRepository.findById(1L)
+    public ReviewResDTO.ReviewDetailDTO createReview(String email, Long productId, ReviewReqDTO.CreateReviewDTO dto) {
+        // 로그인한 Member 조회
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Product product = productRepository.findByIdAndNotDeleted(productId)
@@ -43,9 +43,9 @@ public class ReviewCommandServiceImpl implements ReviewCommandService{
     }
 
     @Override
-    public ReviewResDTO.ReviewDetailDTO updateReview(Long reviewId, ReviewReqDTO.UpdateReviewDTO dto) {
-        // 임시로 Member 설정 (실제로는 인증된 사용자 정보를 사용)
-        Member member = memberRepository.findById(1L)
+    public ReviewResDTO.ReviewDetailDTO updateReview(String email, Long reviewId, ReviewReqDTO.UpdateReviewDTO dto) {
+        // 로그인한 Member 조회
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         // 리뷰 조회
@@ -64,9 +64,9 @@ public class ReviewCommandServiceImpl implements ReviewCommandService{
     }
 
     @Override
-    public void deleteReview(Long reviewId) {
-        // 임시로 Member 설정 (실제로는 인증된 사용자 정보를 사용)
-        Member member = memberRepository.findById(1L)
+    public void deleteReview(String email, Long reviewId) {
+        // 로그인한 Member 조회
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         // 리뷰 조회

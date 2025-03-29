@@ -38,6 +38,10 @@ public class Member extends BaseEntity {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     // 회원 정보 수정 메서드
     public void updateProfile(String nickname) {
         this.nickname = nickname;

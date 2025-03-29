@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,9 +31,10 @@ public class OrderController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "주문 추가 성공", content = @Content(schema = @Schema(implementation = OrderResDTO.OrderDetailDTO.class)))
     })
-    public CustomResponse<OrderResDTO.OrderDetailDTO> createOrder(@RequestBody OrderReqDTO.CreateOrderDTO request) {
+    public CustomResponse<OrderResDTO.OrderDetailDTO> createOrder(@RequestBody OrderReqDTO.CreateOrderDTO request,
+                                                                  @AuthenticationPrincipal UserDetails userDetails) {
 
-        OrderResDTO.OrderDetailDTO response = orderCommandService.createOrder(request);
+        OrderResDTO.OrderDetailDTO response = orderCommandService.createOrder(userDetails.getUsername(), request);
 
         return CustomResponse.onSuccess(response);
     }
@@ -43,9 +46,10 @@ public class OrderController {
     })
     public CustomResponse<OrderResDTO.OrderListDTO> getMyOrders(
             @RequestParam Long cursor,
-            @RequestParam Integer size
+            @RequestParam Integer size,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
-        OrderResDTO.OrderListDTO response = orderQueryService.getMyOrder(cursor, size);
+        OrderResDTO.OrderListDTO response = orderQueryService.getMyOrder(userDetails.getUsername(), cursor, size);
         return CustomResponse.onSuccess(response);
     }
 
@@ -56,8 +60,9 @@ public class OrderController {
     })
     public CustomResponse<OrderResDTO.OrderDetailDTO> updateOrderStatus(
             @PathVariable Long orderId,
-            @RequestBody OrderReqDTO.UpdateOrderStatusDTO request) {
-        OrderResDTO.OrderDetailDTO response = orderCommandService.updateOrderStatus(orderId, request);
+            @RequestBody OrderReqDTO.UpdateOrderStatusDTO request,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        OrderResDTO.OrderDetailDTO response = orderCommandService.updateOrderStatus(userDetails.getUsername(), orderId, request);
         return CustomResponse.onSuccess(response);
     }
 
@@ -66,8 +71,9 @@ public class OrderController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "주문 취소 성공")
     })
-    public CustomResponse<String> cancelOrder(@PathVariable Long orderId) {
-        orderCommandService.cancelOrder(orderId);
+    public CustomResponse<String> cancelOrder(@PathVariable Long orderId,
+                                              @AuthenticationPrincipal UserDetails userDetails) {
+        orderCommandService.cancelOrder(userDetails.getUsername(), orderId);
         return CustomResponse.onSuccess("주문 취소 성공");
     }
 }

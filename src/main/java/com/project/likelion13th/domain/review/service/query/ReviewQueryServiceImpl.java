@@ -1,5 +1,9 @@
 package com.project.likelion13th.domain.review.service.query;
 
+import com.project.likelion13th.domain.member.entity.Member;
+import com.project.likelion13th.domain.member.exception.MemberErrorCode;
+import com.project.likelion13th.domain.member.exception.MemberException;
+import com.project.likelion13th.domain.member.repository.MemberRepository;
 import com.project.likelion13th.domain.order.converter.OrderConverter;
 import com.project.likelion13th.domain.order.dto.response.OrderResDTO;
 import com.project.likelion13th.domain.order.entity.Order;
@@ -27,6 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReviewQueryServiceImpl implements ReviewQueryService {
     private final ReviewRepository reviewRepository;
     private final ProductRepository productRepository;
+    private final MemberRepository memberRepository;
+
     @Override
     public ReviewResDTO.ReviewDetailDTO getReview(Long reviewId) {
         Review review = reviewRepository.findById(reviewId)
@@ -54,17 +60,18 @@ public class ReviewQueryServiceImpl implements ReviewQueryService {
     }
 
     @Override
-    public ReviewResDTO.ReviewListDTO getMyReview(Long cursor, int size) {
-        // 임시로 Member 설정 (실제로는 인증된 사용자 정보를 사용)
-        Long memberId = 1L;
+    public ReviewResDTO.ReviewListDTO getMyReview(String email, Long cursor, int size) {
+        // 로그인한 Member 조회
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Pageable pageable = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "id"));
         Slice<Review> reviews;
 
         if (cursor == 0L) {
-            reviews = reviewRepository.findFirstPageByMemberId(memberId, pageable);
+            reviews = reviewRepository.findFirstPageByMemberId(member.getId(), pageable);
         } else {
-            reviews = reviewRepository.findByMemberIdAndCursor(memberId, cursor, pageable);
+            reviews = reviewRepository.findByMemberIdAndCursor(member.getId(), cursor, pageable);
         }
 
         return ReviewConverter.toReviewListDTO(reviews);

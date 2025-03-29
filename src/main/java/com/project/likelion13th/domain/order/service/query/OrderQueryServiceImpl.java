@@ -1,5 +1,9 @@
 package com.project.likelion13th.domain.order.service.query;
 
+import com.project.likelion13th.domain.member.entity.Member;
+import com.project.likelion13th.domain.member.exception.MemberErrorCode;
+import com.project.likelion13th.domain.member.exception.MemberException;
+import com.project.likelion13th.domain.member.repository.MemberRepository;
 import com.project.likelion13th.domain.order.converter.OrderConverter;
 import com.project.likelion13th.domain.order.dto.response.OrderResDTO;
 import com.project.likelion13th.domain.order.entity.Order;
@@ -17,20 +21,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class OrderQueryServiceImpl implements OrderQueryService {
     private final OrderRepository orderRepository;
+    private final MemberRepository memberRepository;
 
 
     @Override
-    public OrderResDTO.OrderListDTO getMyOrder(Long cursor, int size) {
-        // 임시로 Member 설정 (실제로는 인증된 사용자 정보를 사용)
-        Long memberId = 1L;
+    public OrderResDTO.OrderListDTO getMyOrder(String email, Long cursor, int size) {
+        // 로그인한 Member 조회
+        Member member = memberRepository.findByEmailAndNotDeleted(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Pageable pageable = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "id"));
         Slice<Order> orders;
 
         if (cursor == 0L) {
-            orders = orderRepository.findFirstPageByMemberId(memberId, pageable);
+            orders = orderRepository.findFirstPageByMemberId(member.getId(), pageable);
         } else {
-            orders = orderRepository.findByMemberIdAndCursor(memberId, cursor, pageable);
+            orders = orderRepository.findByMemberIdAndCursor(member.getId(), cursor, pageable);
         }
 
         return OrderConverter.toOrderListDTO(orders);

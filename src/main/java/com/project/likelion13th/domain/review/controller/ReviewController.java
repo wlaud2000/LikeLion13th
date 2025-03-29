@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -34,8 +36,8 @@ public class ReviewController {
             @RequestParam Integer size,
             @RequestParam Long cursor
     ) {
-        reviewQueryService.getReviewPage(productId, cursor, size);
-        return CustomResponse.onSuccess(null);
+        ReviewResDTO.ReviewListDTO response = reviewQueryService.getReviewPage(productId, cursor, size);
+        return CustomResponse.onSuccess(response);
     }
 
     @GetMapping("/reviews/{reviewId}")
@@ -53,8 +55,10 @@ public class ReviewController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "리뷰 작성 성공", content = @Content(schema = @Schema(implementation = ReviewResDTO.ReviewDetailDTO.class)))
     })
-    public CustomResponse<ReviewResDTO.ReviewDetailDTO> createReview(@PathVariable Long productId, @RequestBody ReviewReqDTO.CreateReviewDTO createReviewDTO) {
-        ReviewResDTO.ReviewDetailDTO response = reviewCommandService.createReview(productId, createReviewDTO);
+    public CustomResponse<ReviewResDTO.ReviewDetailDTO> createReview(@PathVariable Long productId,
+                                                                     @RequestBody ReviewReqDTO.CreateReviewDTO createReviewDTO,
+                                                                     @AuthenticationPrincipal UserDetails userDetails) {
+        ReviewResDTO.ReviewDetailDTO response = reviewCommandService.createReview(userDetails.getUsername(), productId, createReviewDTO);
         return CustomResponse.onSuccess(response);
     }
 
@@ -63,8 +67,10 @@ public class ReviewController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "리뷰 수정 성공", content = @Content(schema = @Schema(implementation = ReviewResDTO.ReviewDetailDTO.class)))
     })
-    public CustomResponse<ReviewResDTO.ReviewDetailDTO> updateReview(@PathVariable Long reviewId, @RequestBody ReviewReqDTO.UpdateReviewDTO updateReviewDTO) {
-        ReviewResDTO.ReviewDetailDTO response = reviewCommandService.updateReview(reviewId, updateReviewDTO);
+    public CustomResponse<ReviewResDTO.ReviewDetailDTO> updateReview(@PathVariable Long reviewId,
+                                                                     @RequestBody ReviewReqDTO.UpdateReviewDTO updateReviewDTO,
+                                                                     @AuthenticationPrincipal UserDetails userDetails) {
+        ReviewResDTO.ReviewDetailDTO response = reviewCommandService.updateReview(userDetails.getUsername(), reviewId, updateReviewDTO);
         return CustomResponse.onSuccess(response);
     }
 
@@ -73,8 +79,9 @@ public class ReviewController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "리뷰 삭제 성공")
     })
-    public CustomResponse<String> deleteReview(@PathVariable Long reviewId) {
-        reviewCommandService.deleteReview(reviewId);
+    public CustomResponse<String> deleteReview(@PathVariable Long reviewId,
+                                               @AuthenticationPrincipal UserDetails userDetails) {
+        reviewCommandService.deleteReview(userDetails.getUsername(), reviewId);
         return CustomResponse.onSuccess("리뷰 삭제 성공");
     }
 
@@ -85,8 +92,9 @@ public class ReviewController {
     })
     public CustomResponse<ReviewResDTO.ReviewListDTO> getMyReviews(
             @RequestParam Integer size,
-            @RequestParam Long cursor) {
-        ReviewResDTO.ReviewListDTO response = reviewQueryService.getMyReview(cursor, size);
+            @RequestParam Long cursor,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        ReviewResDTO.ReviewListDTO response = reviewQueryService.getMyReview(userDetails.getUsername(), cursor, size);
         return CustomResponse.onSuccess(response);
     }
 }

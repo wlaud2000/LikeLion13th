@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -55,16 +57,16 @@ public class MemberController {
     }
 
     // ✅ 비밀번호 수정 (JWT 인증 필요)
-    @PatchMapping("/members/{memberId}/password")
+    @PatchMapping("/members/password")
     @Operation(summary = "비밀번호 수정", description = "회원의 비밀번호를 수정합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "비밀번호 수정 성공")
     })
     public CustomResponse<String> resetPassword(
-            @PathVariable Long memberId,
+            @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody MemberReqDTO.PasswordResetDTO request
     ) {
-        memberCommandService.updatePassword(memberId, request);
+        memberCommandService.updatePassword(userDetails.getUsername(), request);
         return CustomResponse.onSuccess("비밀번호 변경 성공");
     }
 
@@ -75,10 +77,10 @@ public class MemberController {
             @ApiResponse(responseCode = "200", description = "프로필 수정 성공", content = @Content(schema = @Schema(implementation = MemberResDTO.class)))
     })
     public CustomResponse<MemberResDTO> updateProfile(
-            @PathVariable Long memberId,
+            @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody MemberReqDTO.UpdateProfileDTO request
     ) {
-        MemberResDTO response = memberCommandService.updateProfile(memberId, request);
+        MemberResDTO response = memberCommandService.updateProfile(userDetails.getUsername(), request);
         return CustomResponse.onSuccess(response);
     }
 
@@ -88,8 +90,8 @@ public class MemberController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공")
     })
-    public CustomResponse<String> deleteMember(@PathVariable Long memberId) {
-        memberCommandService.deleteMember(memberId);
+    public CustomResponse<String> deleteMember(@AuthenticationPrincipal UserDetails userDetails) {
+        memberCommandService.deleteMember(userDetails.getUsername());
         return CustomResponse.onSuccess("회원 탈퇴 성공");
     }
 }
