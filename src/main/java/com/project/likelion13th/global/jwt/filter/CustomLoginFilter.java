@@ -128,7 +128,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         }
 
         // CustomResponse 사용하여 응답 통일
-        CustomResponse<Void> responseBody = CustomResponse.onFailure(errorCode, errorMessage);
+        CustomResponse<JwtDTO> responseBody = CustomResponse.onFailure(errorCode, errorMessage);
 
         ObjectMapper objectMapper = new ObjectMapper();
         response.setStatus(Integer.parseInt(errorCode)); // HTTP 상태 코드 설정

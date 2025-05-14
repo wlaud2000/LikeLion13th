@@ -148,15 +148,6 @@ public class JwtUtil {
         return tokenFromHeader.split(" ")[1]; //Bearer 와 분리
     }
 
-    // 리프레시 토큰의 유효성을 검사
-    public void isRefreshToken(String refreshToken) {
-        Long id = Long.valueOf(getEmail(refreshToken));
-
-        Token token = tokenRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("Refresh Token 이 존재하지 않습니다."));
-
-        validateToken(refreshToken);
-    }
 
     public void validateToken(String token) {
         log.info("[ JwtUtil ] 토큰의 유효성을 검증합니다.");
