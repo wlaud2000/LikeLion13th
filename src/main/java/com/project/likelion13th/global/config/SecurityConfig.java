@@ -4,8 +4,10 @@ package com.project.likelion13th.global.config;
 import com.project.likelion13th.domain.member.repository.MemberRepository;
 import com.project.likelion13th.global.jwt.filter.CustomLoginFilter;
 import com.project.likelion13th.global.jwt.filter.JwtAuthorizationFilter;
+import com.project.likelion13th.global.jwt.handler.CustomLogoutHandler;
 import com.project.likelion13th.global.jwt.handler.JwtAccessDeniedHandler;
 import com.project.likelion13th.global.jwt.handler.JwtAuthenticationEntryPoint;
+import com.project.likelion13th.global.jwt.repository.TokenRepository;
 import com.project.likelion13th.global.jwt.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -31,6 +33,7 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final TokenRepository tokenRepository;
 
 
     //인증이 필요하지 않은 url
@@ -46,7 +49,7 @@ public class SecurityConfig {
     };
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http, TokenRepository tokenRepository) throws Exception{
         CustomLoginFilter loginFilter = new CustomLoginFilter(authenticationManager(authenticationConfiguration), jwtUtil);
         loginFilter.setFilterProcessesUrl("/api/v1/login");
 
@@ -62,6 +65,9 @@ public class SecurityConfig {
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .logout(logout -> logout
+                        .logoutUrl("/api/v1/logout")
+                        .addLogoutHandler(new CustomLogoutHandler(tokenRepository, jwtUtil)))
         ;
 
         return http.build();
