@@ -27,7 +27,6 @@ import java.util.Optional;
 @Service
 public class KakaoService {
 
-
     private final String clientId;     // API Key
     private final String tokenURI;    // 카카오 인증 서버
     private final String userInfoURI;     // 카카오 리소스 서버
@@ -39,7 +38,8 @@ public class KakaoService {
     public KakaoService(@Value("${spring.security.oauth2.client.registration.kakao.client-id}") String clientId,
                         @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}") String redirectURI,
                         @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}") String userInfoURI,
-                        @Value("${spring.security.oauth2.client.provider.kakao.token-uri}") String tokenURI, MemberRepository memberRepository, JwtUtil jwtUtil) {
+                        @Value("${spring.security.oauth2.client.provider.kakao.token-uri}") String tokenURI,
+                        MemberRepository memberRepository, JwtUtil jwtUtil) {
         this.clientId = clientId;
         this.tokenURI = tokenURI;
         this.userInfoURI = userInfoURI;
@@ -54,7 +54,6 @@ public class KakaoService {
                 .post()
                 .uri(uriBuilder -> uriBuilder
                         .scheme("https")
-//                        .path("/oauth/token")
                         .queryParam("grant_type", "authorization_code")
                         .queryParam("client_id", clientId)
                         .queryParam("redirect_uri", redirectURI)
@@ -84,7 +83,6 @@ public class KakaoService {
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .scheme("https")
-//                        .path("/v2/user/me")
                         .build(true))
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // access token 인가
                 .header(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
